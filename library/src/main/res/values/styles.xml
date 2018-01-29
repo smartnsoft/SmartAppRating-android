@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="RateCardStyle">
+    <item name="android:layout_width">match_parent</item>
+  </style>
+  <style name="RatingBar" parent="Theme.AppCompat">
+    <item name="colorControlNormal">@color/yellow_selected</item>
+    <item name="colorControlActivated">@color/yellow_selected</item>
+  </style>
+
+</resources>

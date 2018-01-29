@@ -1,2 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.smartnsoft.smartapprating"/>
+          package="com.smartnsoft.smartapprating">
+
+  <uses-permission android:name="android.permission.INTERNET"/>
+
+  <application>
+
+    <activity android:name=".SmartAppRatingActivity"/>
+
+  </application>
+
+</manifest>
