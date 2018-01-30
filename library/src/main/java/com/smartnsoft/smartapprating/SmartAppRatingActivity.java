@@ -1,16 +1,19 @@
 package com.smartnsoft.smartapprating;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
+import android.view.animation.OvershootInterpolator;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
@@ -35,19 +38,25 @@ public class SmartAppRatingActivity
 
   public static final String IS_IN_DEVELOPMENT_MODE_EXTRA = "isInDevelopmentModeExtra";
 
+  protected View firstScreen;
+
+  protected View secondScreen;
+
   protected TextView title;
 
   protected TextView paragraph;
-
-  protected TextView action;
 
   protected RatingBar rateBar;
 
   protected TextView later;
 
-  protected ImageView close;
+  protected TextView dislikeExitButton;
 
-  protected ImageView image;
+  protected TextView dislikeActionButton;
+
+  protected TextView dislikeTitle;
+
+  protected TextView dislikeParagraph;
 
   protected Configuration configuration;
 
@@ -59,6 +68,27 @@ public class SmartAppRatingActivity
     super.onCreate(savedInstanceState);
     setContentView(getLayoutId());
     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+    bindViews();
+
+    final Bundle bundle = getIntent().getExtras();
+    if (bundle != null)
+    {
+      configuration = (Configuration) bundle.getSerializable(SmartAppRatingActivity.CONFIGURATION_EXTRA);
+      isInDevelopmentMode = bundle.getBoolean(SmartAppRatingActivity.IS_IN_DEVELOPMENT_MODE_EXTRA, false);
+      if (configuration == null)
+      {
+        finish();
+      }
+    }
+
+    setFirstScreenContent(configuration);
+  }
+
+  private void bindViews()
+  {
+    firstScreen = findViewById(R.id.rateMainView);
+    secondScreen = findViewById(R.id.rateDislikeView);
 
     title = findViewById(R.id.title);
     paragraph = findViewById(R.id.paragraph);
@@ -73,40 +103,60 @@ public class SmartAppRatingActivity
         {
           Log.d(TAG, "Rating is now = " + rating);
         }
+
+        setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
+
+        firstScreen.animate().scaleX(0).scaleY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).setListener(new AnimatorListener()
+        {
+          @Override
+          public void onAnimationStart(Animator animation)
+          {
+
+          }
+
+          @Override
+          public void onAnimationEnd(Animator animation)
+          {
+            firstScreen.setVisibility(View.GONE);
+            secondScreen.setVisibility(View.VISIBLE);
+            secondScreen.animate().scaleX(1).scaleY(1).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime)).setInterpolator(new OvershootInterpolator()).start();
+          }
+
+          @Override
+          public void onAnimationCancel(Animator animation)
+          {
+
+          }
+
+          @Override
+          public void onAnimationRepeat(Animator animation)
+          {
+
+          }
+        }).start();
+
       }
     });
-    //    action = findViewById(R.id.action_button);
-    //    if (action != null)
-    //    {
-    //      action.setOnClickListener(this);
-    //    }
-
-    image = findViewById(R.id.image);
-
     later = findViewById(R.id.later);
     if (later != null)
     {
       later.setOnClickListener(this);
     }
 
-    close = findViewById(R.id.close);
-    if (close != null)
+    dislikeTitle = findViewById(R.id.dislikeTitle);
+    dislikeParagraph = findViewById(R.id.dislikeParagraph);
+
+    dislikeActionButton = findViewById(R.id.dislikeActionButton);
+    if (dislikeActionButton != null)
     {
-      close.setOnClickListener(this);
+      dislikeActionButton.setOnClickListener(this);
+    }
+    dislikeExitButton = findViewById(R.id.dislikeExitButton);
+    if (dislikeExitButton != null)
+    {
+      dislikeExitButton.setOnClickListener(this);
     }
 
-    final Bundle bundle = getIntent().getExtras();
-    if (bundle != null)
-    {
-      configuration = (Configuration) bundle.getSerializable(SmartAppRatingActivity.CONFIGURATION_EXTRA);
-      isInDevelopmentMode = bundle.getBoolean(SmartAppRatingActivity.IS_IN_DEVELOPMENT_MODE_EXTRA, false);
-      if (configuration == null)
-      {
-        finish();
-      }
-    }
-
-    updateLayoutWithUpdateInformation(configuration);
   }
 
   @LayoutRes
@@ -115,32 +165,56 @@ public class SmartAppRatingActivity
     return R.layout.rating_popup_activity;
   }
 
-  protected void updateLayoutWithUpdateInformation(Configuration configuration)
+  protected void setSecondViewContent(Configuration configuration, boolean isPositiveRating)
   {
-    setTitle(configuration.ratePopupTitle);
-    setContent(configuration.ratePopupContent);
+    if (isPositiveRating)
+    {
+      setSecondScreenTitle(configuration.likePopupTitle);
+      setSecondScreenParagraph(configuration.likePopupContent);
+      setSecondScreenActionButtonText(configuration.dislikeActionButtonText);
+      setSecondScreenLaterButtonText(configuration.likeExitButtonText);
+    }
+    else
+    {
+      setSecondScreenTitle(configuration.dislikePopupTitle);
+      setSecondScreenParagraph(configuration.dislikePopupTitle);
+      setSecondScreenActionButtonText(configuration.dislikeActionButtonText);
+      setSecondScreenLaterButtonText(configuration.dislikeExitButtonText);
+    }
+  }
+
+  protected void setFirstScreenContent(Configuration configuration)
+  {
+    setFirstScreenTitle(configuration.ratePopupTitle);
+    setFirstScreenParagraph(configuration.ratePopupContent);
+    setFirstScreenLaterButtonText(configuration.likeExitButtonText);
+  }
+
+  @Override
+  public void onBackPressed()
+  {
+    askLater();
+    super.onBackPressed();
   }
 
   @Override
   public void onClick(View view)
   {
-    if (view == action)
+    if (view == dislikeActionButton)
     {
-      onActionButtonClick(configuration);
+      if (rateBar.getRating() >= configuration.minimumNumberOfStarBeforeRedirectToStore)
+      {
+        // open store
+      }
+      else
+      {
+        // open mail
+      }
     }
-    else if (view == later)
+    else if (view == later || view == dislikeExitButton)
     {
       askLater();
     }
-    else if (view == close)
-    {
-      dismiss();
-    }
-  }
-
-  protected void onActionButtonClick(Configuration configuration)
-  {
-
   }
 
   @Override
@@ -150,11 +224,6 @@ public class SmartAppRatingActivity
     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
   }
 
-  protected void dismiss()
-  {
-    finish();
-  }
-
   protected void askLater()
   {
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -162,27 +231,46 @@ public class SmartAppRatingActivity
     finish();
   }
 
-  protected void setTitle(@Nullable final String titleFromRemoteConfig)
+  protected void setFirstScreenTitle(@Nullable final String titleFromConfig)
   {
-    if (TextUtils.isEmpty(titleFromRemoteConfig) == false)
-    {
-      title.setText(titleFromRemoteConfig);
-    }
+    setText(title, titleFromConfig);
   }
 
-  protected void setContent(@Nullable final String contentFromRemoteConfig)
+  protected void setFirstScreenLaterButtonText(@Nullable final String laterButtonTextFromConfig)
   {
-    if (TextUtils.isEmpty(contentFromRemoteConfig) == false)
-    {
-      paragraph.setText(contentFromRemoteConfig);
-    }
+    setText(later, laterButtonTextFromConfig);
   }
 
-  protected void setButtonLabel(@Nullable final String buttonLabelFromRemoteConfig)
+  protected void setFirstScreenParagraph(@Nullable final String contentFromConfig)
   {
-    if (TextUtils.isEmpty(buttonLabelFromRemoteConfig) == false)
+    setText(paragraph, contentFromConfig);
+  }
+
+  protected void setSecondScreenTitle(@Nullable final String titleFromConfig)
+  {
+    setText(dislikeTitle, titleFromConfig);
+  }
+
+  protected void setSecondScreenParagraph(@Nullable final String laterButtonTextFromConfig)
+  {
+    setText(dislikeParagraph, laterButtonTextFromConfig);
+  }
+
+  protected void setSecondScreenActionButtonText(@Nullable final String contentFromConfig)
+  {
+    setText(dislikeActionButton, contentFromConfig);
+  }
+
+  protected void setSecondScreenLaterButtonText(@Nullable final String contentFromConfig)
+  {
+    setText(dislikeExitButton, contentFromConfig);
+  }
+
+  protected final void setText(@NonNull TextView textView, final String text)
+  {
+    if (TextUtils.isEmpty(text) == false)
     {
-      action.setText(buttonLabelFromRemoteConfig);
+      textView.setText(text);
     }
   }
 

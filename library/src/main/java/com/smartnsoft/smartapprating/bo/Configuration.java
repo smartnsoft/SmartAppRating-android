@@ -2,6 +2,7 @@ package com.smartnsoft.smartapprating.bo;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 2018.01.29
  */
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Configuration
     implements Serializable
 {
@@ -63,8 +65,5 @@ public final class Configuration
 
   @JsonProperty(value = "emailHeaderContent")
   public String supportEmailHeaderPlaceholder;
-
-  @JsonProperty(value = "emailFooterContent")
-  public String supportEmailFooterPlaceholder;
 
 }

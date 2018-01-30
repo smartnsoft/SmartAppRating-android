@@ -1,3 +1,9 @@
 <resources>
   <string name="app_name">smartapprating</string>
+  <string name="RateApp_email_footer"><![CDATA[Merci de ne pas effacer les informations suivantes\n
+App Version = %1$s\n
+OS Version = %2$s\n
+Device Type = %3$s\n
+Connection Type = %4$s\n
+]]></string>
 </resources>
