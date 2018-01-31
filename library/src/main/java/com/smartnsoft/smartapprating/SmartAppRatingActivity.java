@@ -29,7 +29,6 @@ import android.widget.TextView;
 import com.smartnsoft.smartapprating.bo.Configuration;
 
 /**
- * The class description here.
  *
  * @author Adrien Vitti
  * @since 2018.01.29

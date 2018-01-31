@@ -1,6 +1,7 @@
 package com.smartnsoft.smartapprating;
 
 import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.smartnsoft.smartapprating.bo.Configuration;
@@ -44,11 +46,13 @@ public final class SmartAppRatingManager
 
     private int cacheSize;
 
-    private ApplicationInformationProvider applicationInformationProvider;
-
     private long minimumTimeGapBeforeAskingAgain = SmartAppRatingManager.MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN;
 
     private long minimumTimeGapAfterACrash = SmartAppRatingManager.MINIMUM_TIME_GAP_AFTER_A_CRASH;
+
+    private String applicationId;
+
+    private String applicationVersionName;
 
     public Builder(@NonNull Context context)
     {
@@ -93,21 +97,30 @@ public final class SmartAppRatingManager
       return this;
     }
 
-    public Builder setApplicationInformationForRatingProvider(
-        @NonNull ApplicationInformationProvider applicationInformationProvider)
+    public Builder setApplicationId(@NonNull String applicationId)
     {
-      this.applicationInformationProvider = applicationInformationProvider;
+      this.applicationId = applicationId;
+      return this;
+    }
+
+    public Builder setApplicationVersionName(@NonNull String applicationVersionName)
+    {
+      this.applicationVersionName = applicationVersionName;
       return this;
     }
 
     public SmartAppRatingManager build()
     {
-      if (applicationInformationProvider == null)
+      if (TextUtils.isEmpty(applicationId))
       {
-        throw new IllegalStateException("Unable to create the app rating manager because the information provider was not set");
+        throw new IllegalStateException("Unable to create the app rating manager because the application ID was not set");
+      }
+      else if (TextUtils.isEmpty(applicationVersionName))
+      {
+        throw new IllegalStateException("Unable to create the app rating manager because the application ID was not set");
       }
 
-      final SmartAppRatingManager smartAppRatingManager = new SmartAppRatingManager(context, applicationInformationProvider, baseURL, configurationFilePath, cacheDirectory, cacheSize);
+      final SmartAppRatingManager smartAppRatingManager = new SmartAppRatingManager(context, applicationId, applicationVersionName, baseURL, configurationFilePath, cacheDirectory, cacheSize);
       smartAppRatingManager.isInDevelopmentMode = isInDevelopmentMode;
       if (ratePopupActivity != null)
       {
@@ -119,22 +132,14 @@ public final class SmartAppRatingManager
     }
   }
 
-  public interface ApplicationInformationProvider
-  {
-
-    @NonNull
-    String getVersionName();
-
-    @NonNull
-    String getApplicationID();
-
-    long getLatestCrashDate();
-
-  }
-
   public static void setRateLaterTimestamp(@NonNull SharedPreferences preferences, long updateLaterTimestamp)
   {
     preferences.edit().putLong(SmartAppRatingManager.LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, updateLaterTimestamp).apply();
+  }
+
+  public static long getLastCrashTimestamp(@NonNull SharedPreferences preferences)
+  {
+    return preferences.getLong(SmartAppRatingManager.LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, -1);
   }
 
   public static long getRateLaterTimestamp(@NonNull SharedPreferences preferences)
@@ -143,6 +148,8 @@ public final class SmartAppRatingManager
   }
 
   private static final String LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY = "lastRateAppPopupClickOnLaterTimestamp";
+
+  private static final String LAST_CRASH_TIMESTAMP_PREFERENCE_KEY = "lastCrashTimestamp";
 
   private static final long MINIMUM_TIME_GAP_AFTER_A_CRASH = 15 * 24 * 60 * 60 * 1000;
 
@@ -154,12 +161,15 @@ public final class SmartAppRatingManager
 
   private final String configurationFilePath;
 
+  @NonNull
+  private final String applicationId;
+
+  @NonNull
+  private final String applicationVersionName;
+
   private boolean isInDevelopmentMode;
 
   private Configuration configuration;
-
-  @NonNull
-  private final ApplicationInformationProvider applicationInformationProvider;
 
   private final SmartAppRatingServices smartAppRatingServices;
 
@@ -170,14 +180,30 @@ public final class SmartAppRatingManager
   private Class<? extends SmartAppRatingActivity> ratingPopupActivityClass = SmartAppRatingActivity.class;
 
   SmartAppRatingManager(@NonNull Context context,
-      @NonNull ApplicationInformationProvider applicationInformationProvider, @NonNull final String baseURL,
+      @NonNull final String applicationId, @NonNull final String applicationVersionName, @NonNull final String baseURL,
       @NonNull final String configurationFilePath, @Nullable File cacheDirectory,
       int cacheSize)
   {
-    this.applicationInformationProvider = applicationInformationProvider;
     this.applicationContext = context.getApplicationContext();
+    this.applicationId = applicationId;
+    this.applicationVersionName = applicationVersionName;
     this.configurationFilePath = configurationFilePath;
     this.smartAppRatingServices = SmartAppRatingServices.get(baseURL, cacheDirectory, cacheSize);
+  }
+
+  public static void setUncaughtExceptionHandler(final Context context,
+      @NonNull final UncaughtExceptionHandler defaultHandler)
+  {
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
+    {
+      @Override
+      public void uncaughtException(Thread thread, Throwable throwable)
+      {
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putLong(SmartAppRatingManager.LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, System.currentTimeMillis()).apply();
+        defaultHandler.uncaughtException(thread, throwable);
+      }
+    });
   }
 
   void setRatingPopupActivityClass(Class<? extends SmartAppRatingActivity> ratingPopupActivityClass)
@@ -270,19 +296,19 @@ public final class SmartAppRatingManager
 
   private void showRatePopup()
   {
+    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     if (configuration != null
         && configuration.isRateAppDisabled == false
-        && applicationInformationProvider.getLatestCrashDate() + SmartAppRatingManager.MINIMUM_TIME_GAP_AFTER_A_CRASH < System.currentTimeMillis()
-        && getRateLaterTimestamp(PreferenceManager.getDefaultSharedPreferences(applicationContext)) + minimumTimeGapBeforeAskingAgain < System.currentTimeMillis()
-
+        && getLastCrashTimestamp(sharedPreferences) + minimumTimeGapAfterACrash < System.currentTimeMillis()
+        && getRateLaterTimestamp(sharedPreferences) + minimumTimeGapBeforeAskingAgain < System.currentTimeMillis()
         )
     {
       if (isInDevelopmentMode)
       {
         Log.d(TAG, "Try to display the rating popup");
       }
-      configuration.versionName = applicationInformationProvider.getVersionName();
-      configuration.applicationID = applicationInformationProvider.getApplicationID();
+      configuration.versionName = applicationVersionName;
+      configuration.applicationID = applicationId;
       final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
       intent.putExtra(SmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
       applicationContext.startActivity(intent);
