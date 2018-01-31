@@ -37,6 +37,9 @@ public final class Configuration
   @JsonProperty(value = "dislikeMainTitle")
   public String dislikePopupTitle;
 
+  @JsonProperty(value = "dislikeMainText")
+  public String dislikePopupContent;
+
   @JsonProperty(value = "dislikeActionButton")
   public String dislikeActionButtonText;
 

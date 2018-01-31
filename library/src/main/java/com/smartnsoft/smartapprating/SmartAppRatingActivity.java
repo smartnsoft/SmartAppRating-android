@@ -184,7 +184,7 @@ public class SmartAppRatingActivity
     else
     {
       setSecondScreenTitle(configuration.dislikePopupTitle);
-      setSecondScreenParagraph(configuration.dislikePopupTitle);
+      setSecondScreenParagraph(configuration.dislikePopupContent);
       setSecondScreenActionButtonText(configuration.dislikeActionButtonText);
       setSecondScreenLaterButtonText(configuration.dislikeExitButtonText);
     }
