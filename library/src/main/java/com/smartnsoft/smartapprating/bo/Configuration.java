@@ -2,6 +2,7 @@ package com.smartnsoft.smartapprating.bo;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -64,6 +65,12 @@ public final class Configuration
   public String supportEmailSubject;
 
   @JsonProperty(value = "emailHeaderContent")
-  public String supportEmailHeaderPlaceholder;
+  public String supportEmailHeader;
+
+  @JsonIgnore
+  public String versionName;
+
+  @JsonIgnore
+  public String applicationID;
 
 }

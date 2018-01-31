@@ -2,13 +2,21 @@ package com.smartnsoft.smartapprating;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -29,10 +37,10 @@ import com.smartnsoft.smartapprating.bo.Configuration;
 
 public class SmartAppRatingActivity
     extends AppCompatActivity
-    implements OnClickListener
+    implements OnClickListener, OnRatingBarChangeListener
 {
 
-  private static String TAG = "SmartAppRatingActivity";
+  private final static String TAG = "SmartAppRatingActivity";
 
   public static final String CONFIGURATION_EXTRA = "configurationExtra";
 
@@ -94,49 +102,7 @@ public class SmartAppRatingActivity
     paragraph = findViewById(R.id.paragraph);
 
     rateBar = findViewById(R.id.rateBar);
-    rateBar.setOnRatingBarChangeListener(new OnRatingBarChangeListener()
-    {
-      @Override
-      public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser)
-      {
-        if (isInDevelopmentMode)
-        {
-          Log.d(TAG, "Rating is now = " + rating);
-        }
-
-        setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
-
-        firstScreen.animate().scaleX(0).scaleY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).setListener(new AnimatorListener()
-        {
-          @Override
-          public void onAnimationStart(Animator animation)
-          {
-
-          }
-
-          @Override
-          public void onAnimationEnd(Animator animation)
-          {
-            firstScreen.setVisibility(View.GONE);
-            secondScreen.setVisibility(View.VISIBLE);
-            secondScreen.animate().scaleX(1).scaleY(1).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime)).setInterpolator(new OvershootInterpolator()).start();
-          }
-
-          @Override
-          public void onAnimationCancel(Animator animation)
-          {
-
-          }
-
-          @Override
-          public void onAnimationRepeat(Animator animation)
-          {
-
-          }
-        }).start();
-
-      }
-    });
+    rateBar.setOnRatingBarChangeListener(this);
     later = findViewById(R.id.later);
     if (later != null)
     {
@@ -159,6 +125,47 @@ public class SmartAppRatingActivity
 
   }
 
+  @Override
+  public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser)
+  {
+    if (isInDevelopmentMode)
+    {
+      Log.d(TAG, "Rating is now = " + rating);
+    }
+
+    setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
+
+    firstScreen.animate().scaleX(0).scaleY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).setListener(new AnimatorListener()
+    {
+      @Override
+      public void onAnimationStart(Animator animation)
+      {
+
+      }
+
+      @Override
+      public void onAnimationEnd(Animator animation)
+      {
+        firstScreen.setVisibility(View.GONE);
+        secondScreen.setVisibility(View.VISIBLE);
+        secondScreen.animate().scaleX(1).scaleY(1).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime)).setInterpolator(new OvershootInterpolator()).start();
+      }
+
+      @Override
+      public void onAnimationCancel(Animator animation)
+      {
+
+      }
+
+      @Override
+      public void onAnimationRepeat(Animator animation)
+      {
+
+      }
+    }).start();
+
+  }
+
   @LayoutRes
   protected int getLayoutId()
   {
@@ -171,7 +178,7 @@ public class SmartAppRatingActivity
     {
       setSecondScreenTitle(configuration.likePopupTitle);
       setSecondScreenParagraph(configuration.likePopupContent);
-      setSecondScreenActionButtonText(configuration.dislikeActionButtonText);
+      setSecondScreenActionButtonText(configuration.likeActionButtonText);
       setSecondScreenLaterButtonText(configuration.likeExitButtonText);
     }
     else
@@ -205,16 +212,87 @@ public class SmartAppRatingActivity
       if (rateBar.getRating() >= configuration.minimumNumberOfStarBeforeRedirectToStore)
       {
         // open store
+        try
+        {
+          startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + configuration.applicationID)));
+        }
+        catch (android.content.ActivityNotFoundException anfe)
+        {
+          startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + configuration.applicationID)));
+        }
       }
       else
       {
-        // open mail
+        startActivity(createSupportEmailIntent());
       }
+      finish();
     }
     else if (view == later || view == dislikeExitButton)
     {
       askLater();
     }
+  }
+
+  @NonNull
+  protected Intent createSupportEmailIntent()
+  {
+    final Intent supportEmailIntent = new Intent(Intent.ACTION_SENDTO);
+    supportEmailIntent.setData(Uri.parse("mailto:"));
+    supportEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { configuration.supportEmail });
+    supportEmailIntent.putExtra(Intent.EXTRA_SUBJECT, configuration.supportEmailSubject);
+    supportEmailIntent.putExtra(Intent.EXTRA_TEXT, configuration.supportEmailHeader + getResources().getString(R.string.RateApp_email_footer, configuration.versionName, VERSION.RELEASE, Build.MODEL, getConnectivityNetworkType()));
+    return supportEmailIntent;
+  }
+
+  @NonNull
+  protected final String getConnectivityNetworkType()
+  {
+    final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    if (connectivityManager == null)
+    {
+      return "?"; //not connected
+    }
+
+    final NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+    if (networkInfo == null || !networkInfo.isConnected())
+    {
+      return "?"; //not connected
+    }
+
+    if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
+    {
+      return "WIFI";
+    }
+
+    if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+    {
+      final int networkType = networkInfo.getSubtype();
+      switch (networkType)
+      {
+        case TelephonyManager.NETWORK_TYPE_GPRS:
+        case TelephonyManager.NETWORK_TYPE_EDGE:
+        case TelephonyManager.NETWORK_TYPE_CDMA:
+        case TelephonyManager.NETWORK_TYPE_1xRTT:
+        case TelephonyManager.NETWORK_TYPE_IDEN:
+          return "2G";
+        case TelephonyManager.NETWORK_TYPE_UMTS:
+        case TelephonyManager.NETWORK_TYPE_EVDO_0:
+        case TelephonyManager.NETWORK_TYPE_EVDO_A:
+        case TelephonyManager.NETWORK_TYPE_HSDPA:
+        case TelephonyManager.NETWORK_TYPE_HSUPA:
+        case TelephonyManager.NETWORK_TYPE_HSPA:
+        case TelephonyManager.NETWORK_TYPE_EVDO_B:
+        case TelephonyManager.NETWORK_TYPE_EHRPD:
+        case TelephonyManager.NETWORK_TYPE_HSPAP:
+          return "3G";
+        case TelephonyManager.NETWORK_TYPE_LTE:
+          return "4G";
+        default:
+          return "?";
+      }
+    }
+    return "?";
   }
 
   @Override
