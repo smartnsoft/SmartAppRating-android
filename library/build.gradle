@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: "maven"
+apply plugin: "signing"
 
 android {
   compileSdkVersion rootProject.compileSdkVersion
@@ -7,7 +9,7 @@ android {
     minSdkVersion rootProject.minSdkVersion
     targetSdkVersion rootProject.compileSdkVersion
     versionCode 1
-    versionName "1.0"
+    versionName "1.0-SNAPSHOT"
   }
 
   buildTypes {
@@ -33,11 +35,63 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson_library_version}")
   implementation("com.fasterxml.jackson.core:jackson-databind:${jackson_library_version}")
 
-  compile ("com.squareup.retrofit2:retrofit:2.3.0")
-  compile ("com.squareup.retrofit2:converter-jackson:2.3.0")
+  compile("com.squareup.retrofit2:retrofit:2.3.0")
+  compile("com.squareup.retrofit2:converter-jackson:2.3.0")
 
 
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.1'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+
+version = android.defaultConfig.versionName
+group = "com.smartnsoft"
+
+uploadArchives
+{
+  repositories
+  {
+    mavenDeployer
+    {
+      repository(url: nexusReleaseUrl)
+      {
+        authentication(userName: nexusUsername, password: nexusPassword)
+      }
+      snapshotRepository(url: nexusSnapshotUrl)
+      {
+        authentication(userName: nexusUsername, password: nexusPassword)
+      }
+      pom.project
+      {
+        artifactId "smartapprating"
+        name "smartapprating"
+        packaging "aar"
+      }
+    }
+  }
+}
+
+// build a jar with source files
+task generateSourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+  failOnError false
+  source = android.sourceSets.main.java.srcDirs
+  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+  classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task generateJavadocJar(type: Jar, dependsOn: javadoc) {
+  from javadoc.destinationDir
+  classifier = 'javadoc'
+}
+
+artifacts {
+  archives generateSourcesJar
+  archives generateJavadocJar
 }
