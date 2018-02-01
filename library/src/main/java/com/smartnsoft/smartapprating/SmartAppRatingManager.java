@@ -119,19 +119,36 @@ public final class SmartAppRatingManager
     preferences.edit().putLong(SmartAppRatingManager.LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, updateLaterTimestamp).apply();
   }
 
-  public static long getLastCrashTimestamp(@NonNull SharedPreferences preferences)
+  private static long getLastCrashTimestamp(@NonNull SharedPreferences preferences)
   {
     return preferences.getLong(SmartAppRatingManager.LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, -1);
   }
 
-  public static long getRateLaterTimestamp(@NonNull SharedPreferences preferences)
+  private static long getRateLaterTimestamp(@NonNull SharedPreferences preferences)
   {
     return preferences.getLong(SmartAppRatingManager.LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, -1);
   }
 
-  private static final String LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY = "lastRateAppPopupClickOnLaterTimestamp";
+  public static void increaseNumberOfSession(@NonNull SharedPreferences preferences)
+  {
+    setNumberOfSession(preferences, getNumberOfSession(preferences) + 1);
+  }
 
-  private static final String LAST_CRASH_TIMESTAMP_PREFERENCE_KEY = "lastCrashTimestamp";
+  public static void setNumberOfSession(@NonNull SharedPreferences preferences, long newNumberOfSession)
+  {
+    preferences.edit().putLong(SmartAppRatingManager.NUMBER_OF_SESSION_PREFERENCE_KEY, newNumberOfSession).apply();
+  }
+
+  private static long getNumberOfSession(@NonNull SharedPreferences preferences)
+  {
+    return preferences.getLong(SmartAppRatingManager.NUMBER_OF_SESSION_PREFERENCE_KEY, 0);
+  }
+
+  private static final String LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY = "smartAppRating_lastRateAppPopupClickOnLaterTimestamp";
+
+  private static final String LAST_CRASH_TIMESTAMP_PREFERENCE_KEY = "smartAppRating_lastCrashTimestamp";
+
+  private static final String NUMBER_OF_SESSION_PREFERENCE_KEY = "smartAppRating_numberOfSession";
 
   private static final long DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
@@ -260,16 +277,14 @@ public final class SmartAppRatingManager
     });
   }
 
-  private void showRatePopup()
+  public void showRatePopup()
   {
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     if (configuration != null
         && configuration.isRateAppDisabled == false
         && (configuration.minimumTimeGapAfterACrashInDays > 0 && getLastCrashTimestamp(sharedPreferences) + (configuration.minimumTimeGapAfterACrashInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
         && (configuration.minimumTimeGapBeforeAskingAgainInDays > 0 && getRateLaterTimestamp(sharedPreferences) + (configuration.minimumTimeGapBeforeAskingAgainInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
-        && (configuration.numberOfSessionBeforeAskingToRate > 0
-        //TODO: Add the number of session verification here
-    )
+        && (configuration.numberOfSessionBeforeAskingToRate > 0 && configuration.numberOfSessionBeforeAskingToRate <= SmartAppRatingManager.getNumberOfSession(sharedPreferences))
         )
     {
       if (isInDevelopmentMode)

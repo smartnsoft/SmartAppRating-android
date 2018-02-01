@@ -1,6 +1,7 @@
 package com.smartnsoft.smartappratingsample;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import com.smartnsoft.smartapprating.SmartAppRatingManager;
 import com.smartnsoft.smartapprating.SmartAppRatingManager.Builder;
@@ -28,7 +29,10 @@ public final class SampleApplication
         .build();
 
     SmartAppRatingManager.setUncaughtExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler());
+    SmartAppRatingManager.increaseNumberOfSession(PreferenceManager.getDefaultSharedPreferences(this));
 
     smartAppRatingManager.fetchConfigurationAndTryToDisplayPopup();
+    //    smartAppRatingManager.fetchConfiguration();
+    //    smartAppRatingManager.showRatePopup();
   }
 }
