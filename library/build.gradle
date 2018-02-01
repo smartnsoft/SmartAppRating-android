@@ -35,10 +35,11 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson_library_version}")
   implementation("com.fasterxml.jackson.core:jackson-databind:${jackson_library_version}")
 
-  compile("com.squareup.retrofit2:retrofit:2.3.0")
-  compile("com.squareup.retrofit2:converter-jackson:2.3.0")
+  // Webservice
+  compile("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
+  compile("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
 
-
+  // Test
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.1'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

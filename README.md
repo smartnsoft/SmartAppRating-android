@@ -56,6 +56,35 @@ smartAppRatingManager.fetchConfiguration();
 smartAppRatingManager.showRatePopup();
 ```
 
+### Custom popup activity
+
+If you want to use a custom layout or override specific parts of the popup activity :
+
+* Extends from class SmartAppRatingActivity
+
+```java
+public final class MyCustomAppRatingActivity
+    extends SmartAppRatingActivity
+{
+
+  @Override
+  protected int getLayoutId()
+  {
+    return R.layout.my_custom_layout;
+  }
+  
+}
+```
+
+* And register the new one in the SmartAppRatingManager Builder
+
+```java
+final SmartAppRatingManager smartAppRatingManager = new Builder(this)
+        .setRatePopupActivity(MyCustomAppRatingActivity.class)
+        ...
+        .build();
+```
+
 ## Releases
 
 ## 1.0.0 (2018-02-01)

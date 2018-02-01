@@ -22,7 +22,8 @@ allprojects {
   {
     appcompat_support_library_version = '27.0.2'
     gms_library_version = '11.8.0'
-    jackson_library_version = "2.8.3"
+    jackson_library_version = '2.8.3'
+    retrofit_library_version = '2.3.0'
     compileSdkVersion = 27
     minSdkVersion = 14
   }
