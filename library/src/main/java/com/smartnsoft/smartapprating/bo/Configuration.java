@@ -16,11 +16,21 @@ public final class Configuration
     implements Serializable
 {
 
+  private static final int MINIMUM_TIME_GAP_AFTER_A_CRASH = 15;
+
+  private static final int MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN = 3;
+
   @JsonProperty(value = "disabled")
   public boolean isRateAppDisabled = false;
 
   @JsonProperty(value = "displaySessionCount")
   public int numberOfSessionBeforeAskingToRate = -1;
+
+  @JsonProperty(value = "daysWithoutCrash")
+  public double minimumTimeGapAfterACrashInDays = MINIMUM_TIME_GAP_AFTER_A_CRASH;
+
+  @JsonProperty(value = "daysBeforeAskingAgain")
+  public double minimumTimeGapBeforeAskingAgainInDays = MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN;
 
   // region First screen : Rate App
   @JsonProperty(value = "mainTitle")

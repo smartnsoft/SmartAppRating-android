@@ -14,6 +14,8 @@
     "likeExitButton": "Plus tard",
     "emailSupport": "supportmobilelci@tf1.fr",
     "emailObject": "Applications LCI",
+    "daysWithoutCrash": 15,
+    "daysBeforeAskingAgain": 3,
     "emailHeaderContent": "Vous n'aimez pas l'application LCI ? Dites-nous pourquoi.",
     "emailFooterContent": "Merci de ne pas effacer les informations suivantes\nApp Version = \nOS Version = \nDevice Type = \nConnection Type = \n"
 }

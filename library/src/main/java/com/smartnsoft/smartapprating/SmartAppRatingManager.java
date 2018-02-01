@@ -46,10 +46,6 @@ public final class SmartAppRatingManager
 
     private int cacheSize;
 
-    private long minimumTimeGapBeforeAskingAgain = SmartAppRatingManager.MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN;
-
-    private long minimumTimeGapAfterACrash = SmartAppRatingManager.MINIMUM_TIME_GAP_AFTER_A_CRASH;
-
     private String applicationId;
 
     private String applicationVersionName;
@@ -85,18 +81,6 @@ public final class SmartAppRatingManager
       return this;
     }
 
-    public Builder setMinimumTimeGapBeforeAskingAgain(long minimumTimeGapBeforeAskingAgain)
-    {
-      this.minimumTimeGapBeforeAskingAgain = minimumTimeGapBeforeAskingAgain;
-      return this;
-    }
-
-    public Builder setMinimumTimeGapAfterACrash(long minimumTimeGapAfterACrash)
-    {
-      this.minimumTimeGapAfterACrash = minimumTimeGapAfterACrash;
-      return this;
-    }
-
     public Builder setApplicationId(@NonNull String applicationId)
     {
       this.applicationId = applicationId;
@@ -126,8 +110,6 @@ public final class SmartAppRatingManager
       {
         smartAppRatingManager.setRatingPopupActivityClass(ratePopupActivity);
       }
-      smartAppRatingManager.setMinimumTimeGapBeforeAskingAgain(minimumTimeGapBeforeAskingAgain);
-      smartAppRatingManager.setMinimumTimeGapAfterACrash(minimumTimeGapAfterACrash);
       return smartAppRatingManager;
     }
   }
@@ -151,9 +133,7 @@ public final class SmartAppRatingManager
 
   private static final String LAST_CRASH_TIMESTAMP_PREFERENCE_KEY = "lastCrashTimestamp";
 
-  private static final long MINIMUM_TIME_GAP_AFTER_A_CRASH = 15 * 24 * 60 * 60 * 1000;
-
-  private static final long MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN = 3 * 24 * 60 * 60 * 1000;
+  private static final long DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
   private static final String TAG = "SmartAppRatingManager";
 
@@ -172,10 +152,6 @@ public final class SmartAppRatingManager
   private Configuration configuration;
 
   private final SmartAppRatingServices smartAppRatingServices;
-
-  private long minimumTimeGapBeforeAskingAgain;
-
-  private long minimumTimeGapAfterACrash;
 
   private Class<? extends SmartAppRatingActivity> ratingPopupActivityClass = SmartAppRatingActivity.class;
 
@@ -209,16 +185,6 @@ public final class SmartAppRatingManager
   void setRatingPopupActivityClass(Class<? extends SmartAppRatingActivity> ratingPopupActivityClass)
   {
     this.ratingPopupActivityClass = ratingPopupActivityClass;
-  }
-
-  public void setMinimumTimeGapBeforeAskingAgain(long minimumTimeGapBeforeAskingAgain)
-  {
-    this.minimumTimeGapBeforeAskingAgain = minimumTimeGapBeforeAskingAgain;
-  }
-
-  public void setMinimumTimeGapAfterACrash(long minimumTimeGapAfterACrash)
-  {
-    this.minimumTimeGapAfterACrash = minimumTimeGapAfterACrash;
   }
 
   public void fetchConfigurationAndTryToDisplayPopup()
@@ -299,8 +265,11 @@ public final class SmartAppRatingManager
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     if (configuration != null
         && configuration.isRateAppDisabled == false
-        && getLastCrashTimestamp(sharedPreferences) + minimumTimeGapAfterACrash < System.currentTimeMillis()
-        && getRateLaterTimestamp(sharedPreferences) + minimumTimeGapBeforeAskingAgain < System.currentTimeMillis()
+        && (configuration.minimumTimeGapAfterACrashInDays > 0 && getLastCrashTimestamp(sharedPreferences) + (configuration.minimumTimeGapAfterACrashInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
+        && (configuration.minimumTimeGapBeforeAskingAgainInDays > 0 && getRateLaterTimestamp(sharedPreferences) + (configuration.minimumTimeGapBeforeAskingAgainInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
+        && (configuration.numberOfSessionBeforeAskingToRate > 0
+        //TODO: Add the number of session verification here
+    )
         )
     {
       if (isInDevelopmentMode)
