@@ -11,6 +11,7 @@ android {
     versionCode 1
     versionName "1.0-SNAPSHOT"
     resourcePrefix 'smartapprating_'
+    consumerProguardFiles 'proguard-rules.pro'
   }
 
   buildTypes {
@@ -37,8 +38,8 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-databind:${jackson_library_version}")
 
   // Webservice
-  compile("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
-  compile("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
+  implementation("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
+  implementation("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
 
   // Test
   testImplementation 'junit:junit:4.12'
