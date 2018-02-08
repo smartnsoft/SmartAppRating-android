@@ -29,7 +29,6 @@ import android.widget.TextView;
 import com.smartnsoft.smartapprating.bo.Configuration;
 
 /**
- *
  * @author Adrien Vitti
  * @since 2018.01.29
  */
@@ -168,7 +167,7 @@ public class SmartAppRatingActivity
   @LayoutRes
   protected int getLayoutId()
   {
-    return R.layout.rating_popup_activity;
+    return R.layout.smartapprating_popup_activity;
   }
 
   protected void setSecondViewContent(Configuration configuration, boolean isPositiveRating)
@@ -224,6 +223,7 @@ public class SmartAppRatingActivity
       {
         startActivity(createSupportEmailIntent());
       }
+      SmartAppRatingManager.setRatingHasBeenGiven(PreferenceManager.getDefaultSharedPreferences(this));
       finish();
     }
     else if (view == later || view == dislikeExitButton)
@@ -239,7 +239,7 @@ public class SmartAppRatingActivity
     supportEmailIntent.setData(Uri.parse("mailto:"));
     supportEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { configuration.supportEmail });
     supportEmailIntent.putExtra(Intent.EXTRA_SUBJECT, configuration.supportEmailSubject);
-    supportEmailIntent.putExtra(Intent.EXTRA_TEXT, configuration.supportEmailHeader + getResources().getString(R.string.RateApp_email_footer, configuration.versionName, VERSION.RELEASE, Build.MODEL, getConnectivityNetworkType()));
+    supportEmailIntent.putExtra(Intent.EXTRA_TEXT, configuration.supportEmailHeader + getResources().getString(R.string.smartapprating_email_footer, configuration.versionName, VERSION.RELEASE, Build.MODEL, getConnectivityNetworkType()));
     return supportEmailIntent;
   }
 
@@ -305,6 +305,7 @@ public class SmartAppRatingActivity
   {
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     SmartAppRatingManager.setRateLaterTimestamp(sharedPreferences, System.currentTimeMillis());
+    SmartAppRatingManager.increaseNumberOfTimeLaterWasClicked(sharedPreferences);
     finish();
   }
 

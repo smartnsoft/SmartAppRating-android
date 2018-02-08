@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="white_semi_translucide">#ccf9f9f9</color>
-  <color name="white">#FFFFFF</color>
-  <color name="gray">#999999</color>
-  <color name="dark_pink">#e40024</color>
-  <color name="very_dark_gray">#333333</color>
-  <color name="dark_blue_gradient">#0024a6</color>
-  <color name="blue">#486FF9</color>
-  <color name="yellow_selected">#F5A622</color>
-  <color name="yellow_unselected">#99F5A622</color>
+  <color name="smartapprating_white_semi_translucide">#ccf9f9f9</color>
+  <color name="smartapprating_white">#FFFFFF</color>
+  <color name="smartapprating_very_dark_gray">#333333</color>
+  <color name="smartapprating_dark_blue_gradient">#0024a6</color>
+  <color name="smartapprating_blue">#486FF9</color>
+  <color name="smartapprating_yellow_selected">#F5A622</color>
+  <color name="smartapprating_yellow_unselected">#99F5A622</color>
 </resources>

@@ -119,6 +119,25 @@ public final class SmartAppRatingManager
     preferences.edit().putLong(SmartAppRatingManager.LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, updateLaterTimestamp).apply();
   }
 
+  public static boolean hasRatingAlreadyBeenGiven(@NonNull SharedPreferences preferences)
+  {
+    return preferences.getBoolean(SmartAppRatingManager.RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY, false);
+  }
+
+  public static void setRatingHasBeenGiven(@NonNull SharedPreferences preferences)
+  {
+    preferences.edit().putBoolean(SmartAppRatingManager.RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY, true).apply();
+  }
+
+  public static void resetRating(@NonNull SharedPreferences preferences)
+  {
+    preferences.edit()
+        .remove(SmartAppRatingManager.RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY)
+        .remove(SmartAppRatingManager.NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY)
+        .remove(SmartAppRatingManager.NUMBER_OF_SESSION_PREFERENCE_KEY)
+        .apply();
+  }
+
   private static long getLastCrashTimestamp(@NonNull SharedPreferences preferences)
   {
     return preferences.getLong(SmartAppRatingManager.LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, -1);
@@ -134,9 +153,25 @@ public final class SmartAppRatingManager
     setNumberOfSession(preferences, getNumberOfSession(preferences) + 1);
   }
 
+  public static void increaseNumberOfTimeLaterWasClicked(@NonNull SharedPreferences preferences)
+  {
+    setNumberOfTimeLaterWasClicked(preferences, getNumberOfTimeLaterWasClicked(preferences) + 1);
+  }
+
   public static void setNumberOfSession(@NonNull SharedPreferences preferences, long newNumberOfSession)
   {
     preferences.edit().putLong(SmartAppRatingManager.NUMBER_OF_SESSION_PREFERENCE_KEY, newNumberOfSession).apply();
+  }
+
+  public static void setNumberOfTimeLaterWasClicked(@NonNull SharedPreferences preferences,
+      long numberOfTimeLaterButtonWasClicked)
+  {
+    preferences.edit().putLong(SmartAppRatingManager.NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, numberOfTimeLaterButtonWasClicked).apply();
+  }
+
+  private static long getNumberOfTimeLaterWasClicked(@NonNull SharedPreferences preferences)
+  {
+    return preferences.getLong(SmartAppRatingManager.NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, 0);
   }
 
   private static long getNumberOfSession(@NonNull SharedPreferences preferences)
@@ -144,11 +179,15 @@ public final class SmartAppRatingManager
     return preferences.getLong(SmartAppRatingManager.NUMBER_OF_SESSION_PREFERENCE_KEY, 0);
   }
 
-  private static final String LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY = "smartAppRating_lastRateAppPopupClickOnLaterTimestamp";
+  private static final String LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY = "SmartAppRating_lastRateAppPopupClickOnLaterTimestamp";
 
-  private static final String LAST_CRASH_TIMESTAMP_PREFERENCE_KEY = "smartAppRating_lastCrashTimestamp";
+  private static final String LAST_CRASH_TIMESTAMP_PREFERENCE_KEY = "SmartAppRating_lastCrashTimestamp";
 
-  private static final String NUMBER_OF_SESSION_PREFERENCE_KEY = "smartAppRating_numberOfSession";
+  private static final String RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY = "SmartAppRating_ratingHasBeenGiven";
+
+  private static final String NUMBER_OF_SESSION_PREFERENCE_KEY = "SmartAppRating_numberOfSession";
+
+  private static final String NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY = "SmartAppRating_numberOfTimeLaterWasClicked";
 
   private static final long DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
@@ -282,9 +321,11 @@ public final class SmartAppRatingManager
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     if (configuration != null
         && configuration.isRateAppDisabled == false
+        && SmartAppRatingManager.hasRatingAlreadyBeenGiven(sharedPreferences) == false
         && (configuration.minimumTimeGapAfterACrashInDays > 0 && getLastCrashTimestamp(sharedPreferences) + (configuration.minimumTimeGapAfterACrashInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
         && (configuration.minimumTimeGapBeforeAskingAgainInDays > 0 && getRateLaterTimestamp(sharedPreferences) + (configuration.minimumTimeGapBeforeAskingAgainInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
         && (configuration.numberOfSessionBeforeAskingToRate > 0 && configuration.numberOfSessionBeforeAskingToRate <= SmartAppRatingManager.getNumberOfSession(sharedPreferences))
+        && (configuration.maxNumberOfReminder > 0 && configuration.maxNumberOfReminder > SmartAppRatingManager.getNumberOfTimeLaterWasClicked(sharedPreferences))
         )
     {
       if (isInDevelopmentMode)
@@ -294,6 +335,7 @@ public final class SmartAppRatingManager
       configuration.versionName = applicationVersionName;
       configuration.applicationID = applicationId;
       final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       intent.putExtra(SmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
       applicationContext.startActivity(intent);
     }

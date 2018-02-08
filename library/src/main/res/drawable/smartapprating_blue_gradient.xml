@@ -3,7 +3,7 @@
        android:shape="rectangle">
 
   <gradient
-    android:startColor="@color/blue"
+    android:startColor="@color/smartapprating_blue"
     android:endColor="#23ccff"
   />
 

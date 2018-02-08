@@ -16,9 +16,11 @@ public final class Configuration
     implements Serializable
 {
 
-  private static final int MINIMUM_TIME_GAP_AFTER_A_CRASH = 15;
+  private static final int MINIMUM_TIME_GAP_AFTER_A_CRASH_IN_DAYS = 15;
 
-  private static final int MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN = 3;
+  private static final int MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN_IN_DAYS = 3;
+
+  private static final int MAXIMUM_NUMBER_OF_POPUP_REMINDER = 3;
 
   @JsonProperty(value = "disabled")
   public boolean isRateAppDisabled = false;
@@ -26,11 +28,14 @@ public final class Configuration
   @JsonProperty(value = "displaySessionCount")
   public int numberOfSessionBeforeAskingToRate = -1;
 
+  @JsonProperty(value = "maxNumberOfReminder")
+  public int maxNumberOfReminder = MAXIMUM_NUMBER_OF_POPUP_REMINDER;
+
   @JsonProperty(value = "daysWithoutCrash")
-  public double minimumTimeGapAfterACrashInDays = MINIMUM_TIME_GAP_AFTER_A_CRASH;
+  public double minimumTimeGapAfterACrashInDays = MINIMUM_TIME_GAP_AFTER_A_CRASH_IN_DAYS;
 
   @JsonProperty(value = "daysBeforeAskingAgain")
-  public double minimumTimeGapBeforeAskingAgainInDays = MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN;
+  public double minimumTimeGapBeforeAskingAgainInDays = MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN_IN_DAYS;
 
   // region First screen : Rate App
   @JsonProperty(value = "mainTitle")

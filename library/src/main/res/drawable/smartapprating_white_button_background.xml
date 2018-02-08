@@ -2,17 +2,17 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item
-    android:drawable="@drawable/white_button_background_pressed"
+    android:drawable="@drawable/smartapprating_white_button_background_pressed"
     android:state_focused="true"
   />
 
   <item
-    android:drawable="@drawable/white_button_background_pressed"
+    android:drawable="@drawable/smartapprating_white_button_background_pressed"
     android:state_pressed="true"
   />
 
   <item
-    android:drawable="@drawable/white_button_background_default"
+    android:drawable="@drawable/smartapprating_white_button_background_default"
     android:state_enabled="true"
   />
 

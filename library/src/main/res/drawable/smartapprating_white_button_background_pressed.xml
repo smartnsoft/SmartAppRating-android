@@ -4,6 +4,6 @@
   android:shape="rectangle"
 >
 
-  <solid android:color="@color/white_semi_translucide"/>
+  <solid android:color="@color/smartapprating_white_semi_translucide"/>
 
 </shape>
