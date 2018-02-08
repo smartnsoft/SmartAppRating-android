@@ -6,7 +6,10 @@
 
   <application>
 
-    <activity android:name=".SmartAppRatingActivity"/>
+    <activity
+      android:name=".SmartAppRatingActivity"
+      android:theme="@style/Theme.AppCompat.NoActionBar"
+    />
 
   </application>
 
