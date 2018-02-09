@@ -1,6 +1,7 @@
 package com.smartnsoft.smartappratingsample;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.smartnsoft.smartapprating.SmartAppRatingManager;
@@ -29,7 +30,8 @@ public final class SampleApplication
         .build();
 
     SmartAppRatingManager.setUncaughtExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler());
-    SmartAppRatingManager.increaseNumberOfSession(PreferenceManager.getDefaultSharedPreferences(this));
+    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    SmartAppRatingManager.increaseNumberOfSession(sharedPreferences);
 
     smartAppRatingManager.fetchConfigurationAndTryToDisplayPopup();
     //    smartAppRatingManager.fetchConfiguration();

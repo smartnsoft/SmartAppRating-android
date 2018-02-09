@@ -56,6 +56,12 @@ smartAppRatingManager.fetchConfiguration();
 smartAppRatingManager.showRatePopup();
 ```
 
+**After a major update, if you want to ask user to rate again, you'll have to use this method:**
+
+```java
+SmartAppRatingManager.resetRating(sharedPreferences);
+```
+
 ### Custom popup activity
 
 If you want to use a custom layout or override specific parts of the popup activity :
