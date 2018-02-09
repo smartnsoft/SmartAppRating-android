@@ -91,7 +91,7 @@ task javadoc(type: Javadoc) {
 // We need this code to avoid the warning due to support annotations usage
 afterEvaluate {
   javadoc.classpath += files(android.libraryVariants.collect { variant ->
-    variant.javaCompile.classpath.files
+    variant.javaCompiler.classpath.files
   })
 }
 
