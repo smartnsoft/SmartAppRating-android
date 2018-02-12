@@ -20,6 +20,8 @@ public final class Configuration
 
   private static final int MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN_IN_DAYS = 3;
 
+  private static final int MAXIMUM_TIME_GAP_BETWEEN_SESSION_IN_DAYS = 3;
+
   private static final int MAXIMUM_NUMBER_OF_POPUP_REMINDER = 3;
 
   @JsonProperty(value = "disabled")
@@ -36,6 +38,9 @@ public final class Configuration
 
   @JsonProperty(value = "daysBeforeAskingAgain")
   public double minimumTimeGapBeforeAskingAgainInDays = MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN_IN_DAYS;
+
+  @JsonProperty(value = "maxDaysBetweenSession")
+  public int maxDaysBetweenSession = MAXIMUM_TIME_GAP_BETWEEN_SESSION_IN_DAYS;
 
   // region First screen : Rate App
   @JsonProperty(value = "mainTitle")

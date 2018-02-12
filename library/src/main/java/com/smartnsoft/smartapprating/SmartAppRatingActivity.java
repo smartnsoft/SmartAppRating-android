@@ -32,7 +32,7 @@ import com.smartnsoft.smartapprating.bo.Configuration;
  * @author Adrien Vitti
  * @since 2018.01.29
  */
-
+@SuppressWarnings({ "unused", "WeakerAccess" })
 public class SmartAppRatingActivity
     extends AppCompatActivity
     implements OnClickListener, OnRatingBarChangeListener

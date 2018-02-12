@@ -1,19 +1,24 @@
 package com.smartnsoft.smartapprating;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Date;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.AnyThread;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.smartnsoft.smartapprating.bo.Configuration;
+import com.smartnsoft.smartapprating.utils.DateUtils;
 import com.smartnsoft.smartapprating.ws.SmartAppRatingServices;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,7 +28,7 @@ import retrofit2.Response;
  * @author Adrien Vitti
  * @since 2018.01.29
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "WeakerAccess" })
 public final class SmartAppRatingManager
 {
 
@@ -189,6 +194,8 @@ public final class SmartAppRatingManager
 
   private static final String NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY = "SmartAppRating_numberOfTimeLaterWasClicked";
 
+  private static final String LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY = "SmartAppRating_lastSessionTimestamp";
+
   private static final long DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
   private static final String TAG = "SmartAppRatingManager";
@@ -243,6 +250,7 @@ public final class SmartAppRatingManager
     this.ratingPopupActivityClass = ratingPopupActivityClass;
   }
 
+  @AnyThread
   public void fetchConfigurationAndTryToDisplayPopup()
   {
     if (isInDevelopmentMode)
@@ -257,7 +265,7 @@ public final class SmartAppRatingManager
       {
         if (response.isSuccessful())
         {
-          configuration = response.body();
+          storeConfiguration(response.body());
           showRatePopup();
         }
         else
@@ -280,6 +288,7 @@ public final class SmartAppRatingManager
     });
   }
 
+  @AnyThread
   public void fetchConfiguration()
   {
     if (isInDevelopmentMode)
@@ -294,7 +303,7 @@ public final class SmartAppRatingManager
       {
         if (response.isSuccessful())
         {
-          configuration = response.body();
+          storeConfiguration(response.body());
         }
         else
         {
@@ -316,9 +325,41 @@ public final class SmartAppRatingManager
     });
   }
 
+  private void storeConfiguration(final Configuration configuration)
+  {
+    if (isInDevelopmentMode)
+    {
+      Log.d(TAG, "Configuration file has been retrieved with success !");
+    }
+    this.configuration = configuration;
+    increaseSessionNumberIfConditionsAreMet(getPreferences());
+  }
+
+  /**
+   * @return true if the configuration file has been retrieved, false otherwise
+   * @throws IOException The exception thrown by the network call
+   */
+  @WorkerThread
+  public boolean fetchConfigurationSync()
+      throws IOException
+  {
+    final Configuration configuration = this.smartAppRatingServices.getConfiguration(configurationFilePath);
+    final boolean configurationHasBeenRetrieved = configuration != null;
+    if (configurationHasBeenRetrieved)
+    {
+      storeConfiguration(configuration);
+    }
+    return configurationHasBeenRetrieved;
+  }
+
+  private SharedPreferences getPreferences()
+  {
+    return PreferenceManager.getDefaultSharedPreferences(applicationContext);
+  }
+
   public void showRatePopup()
   {
-    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+    final SharedPreferences sharedPreferences = getPreferences();
     if (configuration != null
         && configuration.isRateAppDisabled == false
         && SmartAppRatingManager.hasRatingAlreadyBeenGiven(sharedPreferences) == false
@@ -339,6 +380,23 @@ public final class SmartAppRatingManager
       intent.putExtra(SmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
       applicationContext.startActivity(intent);
     }
+  }
+
+  public void increaseSessionNumberIfConditionsAreMet(@NonNull SharedPreferences sharedPreferences)
+  {
+    final long lastSessionDateInMilliseconds = sharedPreferences.getLong(SmartAppRatingManager.LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, 0);
+    final long currentTimeMillis = System.currentTimeMillis();
+    final Date lastSessionDate = new Date(lastSessionDateInMilliseconds);
+
+    if (DateUtils.addDays(lastSessionDate, configuration.maxDaysBetweenSession).getTime() < currentTimeMillis)
+    {
+      SmartAppRatingManager.setNumberOfSession(sharedPreferences, 1);
+    }
+    else if (DateUtils.isSameDay(lastSessionDate, new Date(currentTimeMillis)) == false)
+    {
+      SmartAppRatingManager.increaseNumberOfSession(sharedPreferences);
+    }
+    sharedPreferences.edit().putLong(SmartAppRatingManager.LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, currentTimeMillis).apply();
   }
 
 }
