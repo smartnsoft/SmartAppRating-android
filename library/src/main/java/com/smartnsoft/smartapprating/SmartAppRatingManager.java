@@ -47,7 +47,7 @@ public final class SmartAppRatingManager
     private Context context;
 
     @Nullable
-    private Class<? extends SmartAppRatingActivity> ratePopupActivity;
+    private Class<? extends AbstractSmartAppRatingActivity> ratePopupActivity;
 
     private int cacheSize;
 
@@ -174,7 +174,7 @@ public final class SmartAppRatingManager
     preferences.edit().putLong(SmartAppRatingManager.NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, numberOfTimeLaterButtonWasClicked).apply();
   }
 
-  private static long getNumberOfTimeLaterWasClicked(@NonNull SharedPreferences preferences)
+  static long getNumberOfTimeLaterWasClicked(@NonNull SharedPreferences preferences)
   {
     return preferences.getLong(SmartAppRatingManager.NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, 0);
   }
@@ -216,7 +216,7 @@ public final class SmartAppRatingManager
 
   private final SmartAppRatingServices smartAppRatingServices;
 
-  private Class<? extends SmartAppRatingActivity> ratingPopupActivityClass = SmartAppRatingActivity.class;
+  private Class<? extends AbstractSmartAppRatingActivity> ratingPopupActivityClass = SmartAppRatingActivity.class;
 
   SmartAppRatingManager(@NonNull Context context,
       @NonNull final String applicationId, @NonNull final String applicationVersionName, @NonNull final String baseURL,
@@ -245,7 +245,7 @@ public final class SmartAppRatingManager
     });
   }
 
-  void setRatingPopupActivityClass(Class<? extends SmartAppRatingActivity> ratingPopupActivityClass)
+  void setRatingPopupActivityClass(Class<? extends AbstractSmartAppRatingActivity> ratingPopupActivityClass)
   {
     this.ratingPopupActivityClass = ratingPopupActivityClass;
   }
@@ -360,6 +360,8 @@ public final class SmartAppRatingManager
   public void showRatePopup()
   {
     final SharedPreferences sharedPreferences = getPreferences();
+    setNumberOfSession(sharedPreferences, 60);
+    sharedPreferences.edit().putLong(SmartAppRatingManager.LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, System.currentTimeMillis()).apply();
     if (configuration != null
         && configuration.isRateAppDisabled == false
         && SmartAppRatingManager.hasRatingAlreadyBeenGiven(sharedPreferences) == false
