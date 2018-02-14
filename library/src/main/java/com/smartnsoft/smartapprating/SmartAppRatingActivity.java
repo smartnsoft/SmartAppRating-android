@@ -1,5 +1,7 @@
 package com.smartnsoft.smartapprating;
 
+import android.os.Bundle;
+
 /**
  *
  * @author Adrien Vitti
@@ -9,54 +11,6 @@ package com.smartnsoft.smartapprating;
 public final class SmartAppRatingActivity
     extends AbstractSmartAppRatingActivity
 {
-
-  @Override
-  public void sendUserSetRating(int rating)
-  {
-
-  }
-
-  @Override
-  public void sendRatingScreenDisplay()
-  {
-
-  }
-
-  @Override
-  public void sendAskLaterClickOnRatingScreen()
-  {
-
-  }
-
-  @Override
-  public void sendRatingSuggestionOk()
-  {
-
-  }
-
-  @Override
-  public void sendRatingSuggestionLater()
-  {
-
-  }
-
-  @Override
-  public void sendRatingStoreActivate()
-  {
-
-  }
-
-  @Override
-  public void sendRatingStoreLater()
-  {
-
-  }
-
-  @Override
-  public void generateRatingAnalyticsExtraInfos()
-  {
-
-  }
 
   @Override
   public int getVersionCode()
@@ -69,4 +23,11 @@ public final class SmartAppRatingActivity
   {
     return null;
   }
+
+  @Override
+  public void sendAnalyticsEvent(String eventName, Bundle bundle)
+  {
+
+  }
+
 }

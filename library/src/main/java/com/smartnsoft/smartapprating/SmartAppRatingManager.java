@@ -73,7 +73,7 @@ public final class SmartAppRatingManager
       return this;
     }
 
-    public Builder setRatePopupActivity(@NonNull Class<? extends SmartAppRatingActivity> ratePopupActivity)
+    public Builder setRatePopupActivity(@NonNull Class<? extends AbstractSmartAppRatingActivity> ratePopupActivity)
     {
       this.ratePopupActivity = ratePopupActivity;
       return this;
@@ -379,7 +379,7 @@ public final class SmartAppRatingManager
       configuration.applicationID = applicationId;
       final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      intent.putExtra(SmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
+      intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
       applicationContext.startActivity(intent);
     }
   }

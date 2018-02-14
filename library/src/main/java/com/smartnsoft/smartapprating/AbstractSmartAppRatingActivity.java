@@ -358,7 +358,57 @@ public abstract class AbstractSmartAppRatingActivity
     }
   }
 
-  protected Bundle generateAnalyticsExtraInfos()
+  @Override
+  public long getNumberOfReminderAlreadySeen()
+  {
+    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    return SmartAppRatingManager.getNumberOfTimeLaterWasClicked(sharedPreferences);
+  }
+
+  @Override
+  public void sendRatingScreenDisplay()
+  {
+    sendAnalyticsEvent("RatingDisplay", generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public void sendUserSetRating(int rating)
+  {
+    sendAnalyticsEvent("RatingClick" + rating, generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public void sendAskLaterClickOnRatingScreen()
+  {
+    sendAnalyticsEvent("RatingMainLater", generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public void sendRatingSuggestionOk()
+  {
+    sendAnalyticsEvent("RatingSuggestionOk", generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public void sendRatingSuggestionLater()
+  {
+    sendAnalyticsEvent("RatingSuggestionLater", generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public void sendRatingStoreActivate()
+  {
+    sendAnalyticsEvent("RatingStoreActivate", generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public void sendRatingStoreLater()
+  {
+    sendAnalyticsEvent("RatingStoreLater", generateAnalyticsExtraInfos());
+  }
+
+  @Override
+  public Bundle generateAnalyticsExtraInfos()
   {
     final Bundle extraInfos = new Bundle();
 
@@ -369,10 +419,4 @@ public abstract class AbstractSmartAppRatingActivity
     return extraInfos;
   }
 
-  @Override
-  public long getNumberOfReminderAlreadySeen()
-  {
-    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    return SmartAppRatingManager.getNumberOfTimeLaterWasClicked(sharedPreferences);
-  }
 }
