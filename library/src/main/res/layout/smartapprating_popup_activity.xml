@@ -36,7 +36,7 @@
 
     <TextView
       android:id="@+id/paragraph"
-      android:layout_width="0dp"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:layout_marginEnd="10dip"
@@ -75,7 +75,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="10dip"
-      android:layout_marginTop="20dip"
+      android:layout_marginTop="0dip"
       android:background="@drawable/smartapprating_white_button_background"
       android:gravity="center_horizontal"
       android:padding="15dip"
