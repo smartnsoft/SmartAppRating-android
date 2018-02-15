@@ -288,6 +288,48 @@ public final class SmartAppRatingManager
     });
   }
 
+  /**
+   * This method allow you to fetch and display a rating popup even if conditions are not met.
+   * As a safety it cannot be used when developmentMode is not activated.
+   */
+  @AnyThread
+  public void fetchConfigurationDisplayPopupWithoutVerification()
+  {
+    if (isInDevelopmentMode)
+    {
+      Log.d(TAG, "fetching configuration...");
+    }
+    this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
+    {
+
+      @Override
+      public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+      {
+        if (response.isSuccessful())
+        {
+          storeConfiguration(response.body());
+          showRatePopupWithoutVerification();
+        }
+        else
+        {
+          if (isInDevelopmentMode)
+          {
+            Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+          }
+        }
+      }
+
+      @Override
+      public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
+      {
+        if (isInDevelopmentMode)
+        {
+          Log.w(TAG, "Failed to retrieve configuration file", t);
+        }
+      }
+    });
+  }
+
   @AnyThread
   public void fetchConfiguration()
   {
@@ -360,8 +402,6 @@ public final class SmartAppRatingManager
   public void showRatePopup()
   {
     final SharedPreferences sharedPreferences = getPreferences();
-    setNumberOfSession(sharedPreferences, 60);
-    sharedPreferences.edit().putLong(SmartAppRatingManager.LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, System.currentTimeMillis()).apply();
     if (configuration != null
         && configuration.isRateAppDisabled == false
         && SmartAppRatingManager.hasRatingAlreadyBeenGiven(sharedPreferences) == false
@@ -381,6 +421,31 @@ public final class SmartAppRatingManager
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
       applicationContext.startActivity(intent);
+    }
+  }
+
+  /**
+   * This method allow you to display a rating popup even if conditions are not met.
+   * As a safety it cannot be used when developmentMode is not activated.
+   */
+  public void showRatePopupWithoutVerification()
+  {
+    if (isInDevelopmentMode)
+    {
+      final SharedPreferences sharedPreferences = getPreferences();
+      if (configuration != null)
+      {
+        if (isInDevelopmentMode)
+        {
+          Log.d(TAG, "Try to display the rating popup");
+        }
+        configuration.versionName = applicationVersionName;
+        configuration.applicationID = applicationId;
+        final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
+        applicationContext.startActivity(intent);
+      }
     }
   }
 

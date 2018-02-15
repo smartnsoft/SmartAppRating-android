@@ -33,8 +33,9 @@ public final class SampleApplication
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     SmartAppRatingManager.increaseNumberOfSession(sharedPreferences);
 
-    smartAppRatingManager.fetchConfigurationAndTryToDisplayPopup();
+    //    smartAppRatingManager.fetchConfigurationAndTryToDisplayPopup();
     //    smartAppRatingManager.fetchConfiguration();
     //    smartAppRatingManager.showRatePopup();
+    smartAppRatingManager.fetchConfigurationDisplayPopupWithoutVerification();
   }
 }
