@@ -224,16 +224,31 @@ public abstract class AbstractSmartAppRatingActivity
         {
           startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + configuration.applicationID)));
         }
+        sendRatingStoreActivate();
       }
       else
       {
         startActivity(createSupportEmailIntent());
+        sendRatingSuggestionOk();
       }
       SmartAppRatingManager.setRatingHasBeenGiven(PreferenceManager.getDefaultSharedPreferences(this));
       finish();
     }
-    else if (view == later || view == dislikeExitButton)
+    else if (view == later)
     {
+      sendAskLaterClickOnRatingScreen();
+      askLater();
+    }
+    else if (view == dislikeExitButton)
+    {
+      if (rateBar.getRating() >= configuration.minimumNumberOfStarBeforeRedirectToStore)
+      {
+        sendRatingStoreLater();
+      }
+      else
+      {
+        sendRatingSuggestionLater();
+      }
       askLater();
     }
   }
