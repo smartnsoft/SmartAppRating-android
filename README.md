@@ -14,7 +14,7 @@ A sample is available in this repository : [here](rateConfiguration.json)
 **Gradle :**
 
 ```groovy
-implementation 'com.smartnsoft:smartapprating:1.0'
+implementation 'com.smartnsoft:smartapprating:1.0.0'
 ```
 
 ### Application configuration
