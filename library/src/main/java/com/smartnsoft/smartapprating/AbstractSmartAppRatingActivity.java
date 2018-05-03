@@ -27,6 +27,10 @@ import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
 import com.smartnsoft.smartapprating.bo.Configuration;
+import com.willy.ratingbar.BaseRatingBar;
+import com.willy.ratingbar.BaseRatingBar.OnRatingChangeListener;
+import com.willy.ratingbar.BaseRatingBar.OnRatingDoneListener;
+import com.willy.ratingbar.ScaleRatingBar;
 
 /**
  * @author Adrien Vitti
@@ -35,7 +39,7 @@ import com.smartnsoft.smartapprating.bo.Configuration;
 @SuppressWarnings({ "unused", "WeakerAccess" })
 public abstract class AbstractSmartAppRatingActivity
     extends AppCompatActivity
-    implements OnClickListener, OnRatingBarChangeListener, RatingScreenAnalyticsInterface
+    implements OnClickListener, OnRatingChangeListener, OnRatingDoneListener, RatingScreenAnalyticsInterface
 {
 
   private final static String TAG = "SmartAppRatingActivity";
@@ -52,7 +56,7 @@ public abstract class AbstractSmartAppRatingActivity
 
   protected TextView paragraph;
 
-  protected RatingBar rateBar;
+  protected ScaleRatingBar rateBar;
 
   protected TextView later;
 
@@ -102,7 +106,8 @@ public abstract class AbstractSmartAppRatingActivity
     paragraph = findViewById(R.id.paragraph);
 
     rateBar = findViewById(R.id.rateBar);
-    rateBar.setOnRatingBarChangeListener(this);
+    rateBar.setOnRatingChangeListener(this);
+    rateBar.setOnRatingDoneListener(this);
     later = findViewById(R.id.later);
     if (later != null)
     {
@@ -126,48 +131,49 @@ public abstract class AbstractSmartAppRatingActivity
   }
 
   @Override
-  public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser)
+  public void onRatingChange(BaseRatingBar baseRatingBar, float rating)
   {
-    if (fromUser)
+    if (isInDevelopmentMode)
     {
-      if (isInDevelopmentMode)
+      Log.d(TAG, "Rating is now = " + rating);
+    }
+  }
+
+  @Override
+  public void onRatingDone(float rating)
+  {
+    sendUserSetRating((int) rating);
+
+    setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
+
+    firstScreen.animate().scaleX(0).scaleY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).setListener(new AnimatorListener()
+    {
+      @Override
+      public void onAnimationStart(Animator animation)
       {
-        Log.d(TAG, "Rating is now = " + rating);
+
       }
 
-      sendUserSetRating((int) rating);
-
-      setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
-
-      firstScreen.animate().scaleX(0).scaleY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).setListener(new AnimatorListener()
+      @Override
+      public void onAnimationEnd(Animator animation)
       {
-        @Override
-        public void onAnimationStart(Animator animation)
-        {
+        firstScreen.setVisibility(View.GONE);
+        secondScreen.setVisibility(View.VISIBLE);
+        secondScreen.animate().scaleX(1).scaleY(1).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime)).setInterpolator(new OvershootInterpolator()).start();
+      }
 
-        }
+      @Override
+      public void onAnimationCancel(Animator animation)
+      {
 
-        @Override
-        public void onAnimationEnd(Animator animation)
-        {
-          firstScreen.setVisibility(View.GONE);
-          secondScreen.setVisibility(View.VISIBLE);
-          secondScreen.animate().scaleX(1).scaleY(1).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime)).setInterpolator(new OvershootInterpolator()).start();
-        }
+      }
 
-        @Override
-        public void onAnimationCancel(Animator animation)
-        {
+      @Override
+      public void onAnimationRepeat(Animator animation)
+      {
 
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation)
-        {
-
-        }
-      }).start();
-    }
+      }
+    }).start();
   }
 
   @LayoutRes
