@@ -43,33 +43,7 @@ public class AnimatedSmartAppRatingActivity
     super.setFirstScreenContent(configuration);
     final ObjectAnimator anim = ObjectAnimator.ofFloat(rateBar, "rating", 5f, 0f, 5f);
     anim.setDuration(1000);
-    anim.setStartDelay(1000);
-    anim.addListener(new AnimatorListener()
-    {
-      @Override
-      public void onAnimationStart(Animator animation)
-      {
-
-      }
-
-      @Override
-      public void onAnimationEnd(Animator animation)
-      {
-        rateBar.setRating(5f);
-      }
-
-      @Override
-      public void onAnimationCancel(Animator animation)
-      {
-
-      }
-
-      @Override
-      public void onAnimationRepeat(Animator animation)
-      {
-
-      }
-    });
+    anim.setStartDelay(500);
     anim.start();
   }
 }

@@ -26,7 +26,7 @@ allprojects {
     constraint_layout_library_version = '1.1.0-beta4'
     jackson_library_version = '2.8.3'
     retrofit_library_version = '2.3.0'
-    simple_ratingbar_version = '1.5'
+    simple_ratingbar_version = '1.6.1'
     compileSdkVersion = 27
     minSdkVersion = 15
   }
