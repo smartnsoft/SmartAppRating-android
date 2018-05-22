@@ -96,6 +96,7 @@ final SmartAppRatingManager smartAppRatingManager = new Builder(this)
 ## 1.1.0 (TBD)
 * Updated ConstraintLayout to version 1.1.0
 * Added a way to get RatingPopup Intent to add more extras
+* Improved the rating bar widget
 
 ## 1.0.0 (2018-02-01)
 * Initial release
