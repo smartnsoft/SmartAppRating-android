@@ -9,7 +9,8 @@ import com.smartnsoft.smartapprating.AbstractSmartAppRatingActivity;
 import com.smartnsoft.smartapprating.bo.Configuration;
 
 /**
- * The class description here.
+ * A simple class extending AbstractSmartAppRatingActivity to demonstrate how one can add a simple animation
+ * at the view startup.
  *
  * @author David Fournier
  * @since 2018.05.03
@@ -54,7 +55,7 @@ public class AnimatedSmartAppRatingActivity
       @Override
       public void onAnimationEnd(Animator animation)
       {
-        rateBar.setRating(0f);
+        rateBar.setRating(5f);
       }
 
       @Override
