@@ -401,6 +401,16 @@ public final class SmartAppRatingManager
 
   public void showRatePopup()
   {
+    final Intent ratingPopupIntent = getRatingPopupIntent();
+    if (ratingPopupIntent != null)
+    {
+      applicationContext.startActivity(ratingPopupIntent);
+    }
+  }
+
+  @Nullable
+  public Intent getRatingPopupIntent()
+  {
     final SharedPreferences sharedPreferences = getPreferences();
     if (configuration != null
         && configuration.isRateAppDisabled == false
@@ -420,8 +430,9 @@ public final class SmartAppRatingManager
       final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
-      applicationContext.startActivity(intent);
+      return intent;
     }
+    return null;
   }
 
   /**
@@ -447,6 +458,29 @@ public final class SmartAppRatingManager
         applicationContext.startActivity(intent);
       }
     }
+  }
+
+  /*
+   * This method allow you to get the rating popup intent even if conditions are not met.
+   * As a safety it will return null if developmentMode is not activated or if configuration is not set.
+   */
+  @Nullable
+  public Intent getRatePopupIntentWithoutVerification()
+  {
+    if (isInDevelopmentMode)
+    {
+      final SharedPreferences sharedPreferences = getPreferences();
+      if (configuration != null)
+      {
+        configuration.versionName = applicationVersionName;
+        configuration.applicationID = applicationId;
+        final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
+        return intent;
+      }
+    }
+    return null;
   }
 
   public void increaseSessionNumberIfConditionsAreMet(@NonNull SharedPreferences sharedPreferences)

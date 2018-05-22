@@ -16,7 +16,6 @@ public final class SampleApplication
     extends Application
 {
 
-
   @Override
   public void onCreate()
   {
