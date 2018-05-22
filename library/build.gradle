@@ -41,6 +41,9 @@ dependencies {
   implementation("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
   implementation("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
 
+  // SimpleRatingBar
+  api("com.github.smartnsoft:SimpleRatingBar:${simple_ratingbar_version}")
+
   // Test
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.1'

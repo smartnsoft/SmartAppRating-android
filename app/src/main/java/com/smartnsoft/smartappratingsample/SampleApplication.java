@@ -24,6 +24,7 @@ public final class SampleApplication
     final SmartAppRatingManager smartAppRatingManager = new Builder(this)
         .setIsInDevelopmentMode(BuildConfig.DEBUG)
         .setApplicationId(BuildConfig.DEBUG ? "com.smartnsoft.metro" : BuildConfig.APPLICATION_ID)
+        .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
         .setConfigurationFileURL("http://smartdistrib.com/", "shared/lci/rateConfiguration.json")
         .build();
