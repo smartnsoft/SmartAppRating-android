@@ -43,6 +43,8 @@ public final class SmartAppRatingManager
 
     private File cacheDirectory = null;
 
+    private Configuration configuration;
+
     @NonNull
     private Context context;
 
@@ -92,6 +94,12 @@ public final class SmartAppRatingManager
       return this;
     }
 
+    public Builder setConfiguration(@NonNull Configuration configuration)
+    {
+      this.configuration = configuration;
+      return this;
+    }
+
     public Builder setApplicationVersionName(@NonNull String applicationVersionName)
     {
       this.applicationVersionName = applicationVersionName;
@@ -108,8 +116,13 @@ public final class SmartAppRatingManager
       {
         throw new IllegalStateException("Unable to create the app rating manager because the application ID was not set");
       }
+      else if (TextUtils.isEmpty(baseURL) && configuration == null)
+      {
+        throw new IllegalStateException("Unable to create the app rating manager because no URL and no configuration were given");
+      }
 
       final SmartAppRatingManager smartAppRatingManager = new SmartAppRatingManager(context, applicationId, applicationVersionName, baseURL, configurationFilePath, cacheDirectory, cacheSize);
+      smartAppRatingManager.configuration = configuration;
       smartAppRatingManager.isInDevelopmentMode = isInDevelopmentMode;
       if (ratePopupActivity != null)
       {
@@ -202,8 +215,6 @@ public final class SmartAppRatingManager
 
   private final Context applicationContext;
 
-  private final String configurationFilePath;
-
   @NonNull
   private final String applicationId;
 
@@ -214,7 +225,11 @@ public final class SmartAppRatingManager
 
   private Configuration configuration;
 
+  @Nullable
   private final SmartAppRatingServices smartAppRatingServices;
+
+  @Nullable
+  private final String configurationFilePath;
 
   private Class<? extends AbstractSmartAppRatingActivity> ratingPopupActivityClass = SmartAppRatingActivity.class;
 
@@ -226,8 +241,16 @@ public final class SmartAppRatingManager
     this.applicationContext = context.getApplicationContext();
     this.applicationId = applicationId;
     this.applicationVersionName = applicationVersionName;
-    this.configurationFilePath = configurationFilePath;
-    this.smartAppRatingServices = SmartAppRatingServices.get(baseURL, cacheDirectory, cacheSize);
+    if (TextUtils.isEmpty(baseURL) == false)
+    {
+      this.configurationFilePath = configurationFilePath;
+      this.smartAppRatingServices = SmartAppRatingServices.get(baseURL, cacheDirectory, cacheSize);
+    }
+    else
+    {
+      this.configurationFilePath = null;
+      this.smartAppRatingServices = null;
+    }
   }
 
   public static void setUncaughtExceptionHandler(final Context context,
@@ -253,39 +276,49 @@ public final class SmartAppRatingManager
   @AnyThread
   public void fetchConfigurationAndTryToDisplayPopup()
   {
-    if (isInDevelopmentMode)
+    if (this.smartAppRatingServices != null)
     {
-      Log.d(TAG, "fetching configuration...");
-    }
-    this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
-    {
-
-      @Override
-      public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+      if (isInDevelopmentMode)
       {
-        if (response.isSuccessful())
+        Log.d(TAG, "fetching configuration...");
+      }
+      this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
+      {
+
+        @Override
+        public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
         {
-          storeConfiguration(response.body());
-          showRatePopup();
+          if (response.isSuccessful())
+          {
+            storeConfiguration(response.body());
+            showRatePopup();
+          }
+          else
+          {
+            if (isInDevelopmentMode)
+            {
+              Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+            }
+          }
         }
-        else
+
+        @Override
+        public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
         {
           if (isInDevelopmentMode)
           {
-            Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+            Log.w(TAG, "Failed to retrieve configuration file", t);
           }
         }
-      }
-
-      @Override
-      public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
+      });
+    }
+    else
+    {
+      if (isInDevelopmentMode)
       {
-        if (isInDevelopmentMode)
-        {
-          Log.w(TAG, "Failed to retrieve configuration file", t);
-        }
+        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
       }
-    });
+    }
   }
 
   /**
@@ -295,76 +328,96 @@ public final class SmartAppRatingManager
   @AnyThread
   public void fetchConfigurationDisplayPopupWithoutVerification()
   {
-    if (isInDevelopmentMode)
+    if (this.smartAppRatingServices != null)
     {
-      Log.d(TAG, "fetching configuration...");
-    }
-    this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
-    {
-
-      @Override
-      public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+      if (isInDevelopmentMode)
       {
-        if (response.isSuccessful())
+        Log.d(TAG, "fetching configuration...");
+      }
+      this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
+      {
+
+        @Override
+        public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
         {
-          storeConfiguration(response.body());
-          showRatePopupWithoutVerification();
+          if (response.isSuccessful())
+          {
+            storeConfiguration(response.body());
+            showRatePopupWithoutVerification();
+          }
+          else
+          {
+            if (isInDevelopmentMode)
+            {
+              Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+            }
+          }
         }
-        else
+
+        @Override
+        public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
         {
           if (isInDevelopmentMode)
           {
-            Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+            Log.w(TAG, "Failed to retrieve configuration file", t);
           }
         }
-      }
-
-      @Override
-      public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
+      });
+    }
+    else
+    {
+      if (isInDevelopmentMode)
       {
-        if (isInDevelopmentMode)
-        {
-          Log.w(TAG, "Failed to retrieve configuration file", t);
-        }
+        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
       }
-    });
+    }
   }
 
   @AnyThread
   public void fetchConfiguration()
   {
-    if (isInDevelopmentMode)
+    if (this.smartAppRatingServices != null)
     {
-      Log.d(TAG, "fetching configuration...");
-    }
-    this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
-    {
-
-      @Override
-      public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+      if (isInDevelopmentMode)
       {
-        if (response.isSuccessful())
+        Log.d(TAG, "fetching configuration...");
+      }
+      this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
+      {
+
+        @Override
+        public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
         {
-          storeConfiguration(response.body());
+          if (response.isSuccessful())
+          {
+            storeConfiguration(response.body());
+          }
+          else
+          {
+            if (isInDevelopmentMode)
+            {
+              Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+            }
+          }
         }
-        else
+
+        @Override
+        public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
         {
           if (isInDevelopmentMode)
           {
-            Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+            Log.w(TAG, "Failed to retrieve configuration file", t);
           }
         }
-      }
-
-      @Override
-      public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
+      });
+    }
+    else
+    {
+      if (isInDevelopmentMode)
       {
-        if (isInDevelopmentMode)
-        {
-          Log.w(TAG, "Failed to retrieve configuration file", t);
-        }
+        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
       }
-    });
+    }
   }
 
   private void storeConfiguration(final Configuration configuration)
@@ -385,13 +438,24 @@ public final class SmartAppRatingManager
   public boolean fetchConfigurationSync()
       throws IOException
   {
-    final Configuration configuration = this.smartAppRatingServices.getConfiguration(configurationFilePath);
-    final boolean configurationHasBeenRetrieved = configuration != null;
-    if (configurationHasBeenRetrieved)
+    if (this.smartAppRatingServices != null)
     {
-      storeConfiguration(configuration);
+      final Configuration configuration = this.smartAppRatingServices.getConfiguration(configurationFilePath);
+      final boolean configurationHasBeenRetrieved = configuration != null;
+      if (configurationHasBeenRetrieved)
+      {
+        storeConfiguration(configuration);
+      }
+      return configurationHasBeenRetrieved;
     }
-    return configurationHasBeenRetrieved;
+    else
+    {
+      if (isInDevelopmentMode)
+      {
+        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
+      }
+      return false;
+    }
   }
 
   private SharedPreferences getPreferences()

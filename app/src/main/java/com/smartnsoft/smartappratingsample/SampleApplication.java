@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.smartnsoft.smartapprating.SmartAppRatingManager;
 import com.smartnsoft.smartapprating.SmartAppRatingManager.Builder;
+import com.smartnsoft.smartapprating.bo.Configuration;
 
 /**
  * @author Adrien Vitti
@@ -26,7 +27,8 @@ public final class SampleApplication
         .setApplicationId(BuildConfig.DEBUG ? "com.smartnsoft.metro" : BuildConfig.APPLICATION_ID)
         .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
-        .setConfigurationFileURL("http://smartdistrib.com/", "shared/lci/rateConfiguration.json")
+//        .setConfiguration(new Configuration())
+        .setConfigurationFileURL("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
         .build();
 
     SmartAppRatingManager.setUncaughtExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler());
