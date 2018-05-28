@@ -489,12 +489,7 @@ public final class SmartAppRatingManager
       {
         Log.d(TAG, "Try to display the rating popup");
       }
-      configuration.versionName = applicationVersionName;
-      configuration.applicationID = applicationId;
-      final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
-      return intent;
+      return createRatePopupIntent();
     }
     return null;
   }
@@ -505,23 +500,27 @@ public final class SmartAppRatingManager
    */
   public void showRatePopupWithoutVerification()
   {
-    if (isInDevelopmentMode)
+    final Intent ratePopupIntentWithoutVerification = getRatePopupIntentWithoutVerification();
+
+    if (ratePopupIntentWithoutVerification != null)
     {
-      final SharedPreferences sharedPreferences = getPreferences();
-      if (configuration != null)
+      if (isInDevelopmentMode)
       {
-        if (isInDevelopmentMode)
-        {
-          Log.d(TAG, "Try to display the rating popup");
-        }
-        configuration.versionName = applicationVersionName;
-        configuration.applicationID = applicationId;
-        final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
-        applicationContext.startActivity(intent);
+        Log.d(TAG, "Try to display the rating popup");
       }
+      applicationContext.startActivity(ratePopupIntentWithoutVerification);
     }
+  }
+
+  private Intent createRatePopupIntent()
+  {
+    configuration.versionName = applicationVersionName;
+    configuration.applicationID = applicationId;
+    final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
+    intent.putExtra(AbstractSmartAppRatingActivity.IS_IN_DEVELOPMENT_MODE_EXTRA, isInDevelopmentMode);
+    return intent;
   }
 
   /*
@@ -533,15 +532,9 @@ public final class SmartAppRatingManager
   {
     if (isInDevelopmentMode)
     {
-      final SharedPreferences sharedPreferences = getPreferences();
       if (configuration != null)
       {
-        configuration.versionName = applicationVersionName;
-        configuration.applicationID = applicationId;
-        final Intent intent = new Intent(applicationContext, ratingPopupActivityClass);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration);
-        return intent;
+        return createRatePopupIntent();
       }
     }
     return null;
