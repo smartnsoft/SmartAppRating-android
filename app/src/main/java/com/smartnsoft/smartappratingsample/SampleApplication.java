@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 
 import com.smartnsoft.smartapprating.SmartAppRatingManager;
 import com.smartnsoft.smartapprating.SmartAppRatingManager.Builder;
-import com.smartnsoft.smartapprating.bo.Configuration;
 
 /**
  * @author Adrien Vitti
@@ -17,17 +16,24 @@ public final class SampleApplication
     extends Application
 {
 
+  private static SmartAppRatingManager ratingManager;
+
+  public static SmartAppRatingManager getRatingManager()
+  {
+    return ratingManager;
+  }
+
   @Override
   public void onCreate()
   {
     super.onCreate();
 
-    final SmartAppRatingManager smartAppRatingManager = new Builder(this)
+    ratingManager = new Builder(this)
         .setIsInDevelopmentMode(BuildConfig.DEBUG)
         .setApplicationId(BuildConfig.DEBUG ? "com.smartnsoft.metro" : BuildConfig.APPLICATION_ID)
         .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
-//        .setConfiguration(new Configuration())
+        //        .setConfiguration(new Configuration())
         .setConfigurationFileURL("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
         .build();
 
@@ -38,6 +44,5 @@ public final class SampleApplication
     //    smartAppRatingManager.fetchConfigurationAndTryToDisplayPopup();
     //    smartAppRatingManager.fetchConfiguration();
     //    smartAppRatingManager.showRatePopup();
-    smartAppRatingManager.fetchConfigurationDisplayPopupWithoutVerification();
   }
 }

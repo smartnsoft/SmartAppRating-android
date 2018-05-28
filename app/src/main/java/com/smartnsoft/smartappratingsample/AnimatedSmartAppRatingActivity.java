@@ -1,7 +1,5 @@
 package com.smartnsoft.smartappratingsample;
 
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 
@@ -41,7 +39,7 @@ public class AnimatedSmartAppRatingActivity
   protected void setFirstScreenContent(Configuration configuration)
   {
     super.setFirstScreenContent(configuration);
-    final ObjectAnimator anim = ObjectAnimator.ofFloat(rateBar, "rating", 5f, 0f, 5f);
+    final ObjectAnimator anim = ObjectAnimator.ofFloat(rateBar, "rating", 5f, 1f, 5f);
     anim.setDuration(1000);
     anim.setStartDelay(500);
     anim.start();
