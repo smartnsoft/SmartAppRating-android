@@ -21,11 +21,22 @@
     <item name="layout_constraintWidth_percent">@string/smartapprating_popup_width</item>
   </style>
 
-  <style name="smartapprating_RatingBar" parent="Theme.AppCompat">
+  <style name="smartapprating_AndroidRatingBar" parent="Theme.AppCompat">
     <item name="colorControlNormal">@color/smartapprating_yellow_selected</item>
     <item name="colorControlActivated">@color/smartapprating_yellow_selected</item>
     <item name="android:numStars">5</item>
     <item name="android:stepSize">1</item>
+  </style>
+
+  <style name="smartapprating_SimpleRatingBar">
+    <item name="srb_drawableEmpty">@drawable/ic_star_empty</item>
+    <item name="srb_drawableFilled">@drawable/ic_star_full</item>
+    <item name="srb_minimumStars">1</item>
+    <item name="srb_starHeight">30dp</item>
+    <item name="srb_clearRatingEnabled">false</item>
+    <item name="srb_starPadding">7dp</item>
+    <item name="srb_starWidth">30dp</item>
+    <item name="srb_stepSize">1.0</item>
   </style>
 
   <style

@@ -63,18 +63,12 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="20dip"
       android:gravity="center"
-      android:theme="@style/smartapprating_RatingBar"
+      android:theme="@style/smartapprating_AndroidRatingBar"
       app:layout_constraintBottom_toTopOf="@id/later"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toBottomOf="@id/paragraph"
-      app:srb_drawableEmpty="@drawable/ic_star_empty"
-      app:srb_drawableFilled="@drawable/ic_star_full"
-      app:srb_minimumStars="1"
-      app:srb_starHeight="30dp"
-      app:srb_starPadding="7dp"
-      app:srb_starWidth="30dp"
-      app:srb_stepSize="1.0"
+      style="@style/smartapprating_SimpleRatingBar"
     />
 
     <TextView

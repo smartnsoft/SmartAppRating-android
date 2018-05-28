@@ -142,6 +142,10 @@ public abstract class AbstractSmartAppRatingActivity
   @Override
   public void onRatingDone(float rating)
   {
+    if (isInDevelopmentMode)
+    {
+      Log.d(TAG, "User selected a rating of " + rating + "/5");
+    }
     sendUserSetRating((int) rating);
 
     setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
