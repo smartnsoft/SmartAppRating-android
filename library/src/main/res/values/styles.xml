@@ -3,7 +3,7 @@
 
   <style name="smartapprating_CardStyle">
     <item name="android:layout_width">0dp</item>
-    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_height">0dp</item>
     <item name="android:layout_gravity">center</item>
     <item name="android:layout_marginTop">15dip</item>
     <item name="android:layout_marginBottom">15dip</item>
@@ -19,7 +19,7 @@
     <item name="layout_constraintRight_toRightOf">parent</item>
     <item name="layout_constraintTop_toTopOf">parent</item>
     <item name="layout_constraintWidth_percent">@string/smartapprating_popup_width</item>
-    <item name="layout_constrainedHeight">true</item>
+    <item name="layout_constraintHeight_default">wrap</item>
   </style>
 
   <style name="smartapprating_RatingBar" parent="Theme.AppCompat">
