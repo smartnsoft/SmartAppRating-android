@@ -29,8 +29,8 @@
   </style>
 
   <style name="smartapprating_SimpleRatingBar">
-    <item name="srb_drawableEmpty">@drawable/ic_star_empty</item>
-    <item name="srb_drawableFilled">@drawable/ic_star_full</item>
+    <item name="srb_drawableEmpty">@drawable/smartapprating_ic_star_empty</item>
+    <item name="srb_drawableFilled">@drawable/smartapprating_ic_star_full</item>
     <item name="srb_minimumStars">1</item>
     <item name="srb_starHeight">30dp</item>
     <item name="srb_clearRatingEnabled">false</item>

@@ -9,7 +9,7 @@ android {
     minSdkVersion rootProject.minSdkVersion
     targetSdkVersion rootProject.compileSdkVersion
     versionCode 1
-    versionName "1.1.0-rc4-SNAPSHOT"
+    versionName "1.1.0"
     resourcePrefix 'smartapprating_'
     consumerProguardFiles 'proguard-rules.pro'
   }
