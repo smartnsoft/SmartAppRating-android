@@ -9,7 +9,7 @@ android {
     minSdkVersion rootProject.minSdkVersion
     targetSdkVersion rootProject.compileSdkVersion
     versionCode 1
-    versionName "1.1.0"
+    versionName "1.2.0-001-SNAPSHOT"
     resourcePrefix 'smartapprating_'
     consumerProguardFiles 'proguard-rules.pro'
   }
@@ -42,7 +42,7 @@ dependencies {
   implementation("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
 
   // SimpleRatingBar
-  api("com.github.smartnsoft:SimpleRatingBar:${simple_ratingbar_version}")
+  api("com.github.smartnsoft:SimpleRatingBar:5e0efc58bc")
 
   // Test
   testImplementation 'junit:junit:4.12'

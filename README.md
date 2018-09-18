@@ -93,10 +93,14 @@ final SmartAppRatingManager smartAppRatingManager = new Builder(this)
 
 ## Releases
 
-## 1.1.0 (TBD)
+## 1.2.0 (TBD)
+* Added the ability to set custom drawable for each position of the rating bar
+
+## 1.1.0 (2018-06-05)
 * Updated ConstraintLayout to version 1.1.0
 * Added a way to get RatingPopup Intent to add more extras
 * Improved the rating bar widget
+* Disabled the reset rating feature of the SimpleRatingBar
 
 ## 1.0.0 (2018-02-01)
 * Initial release
