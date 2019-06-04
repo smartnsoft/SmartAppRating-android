@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,7 +12,7 @@
   android:paddingStart="20dip"
   tools:ignore="MissingPrefix"
 >
-  <android.support.constraint.ConstraintLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/rateMainView"
     tools:visibility="visible"
     style="@style/smartapprating_CardStyle"
@@ -89,9 +89,9 @@
       app:layout_constraintTop_toBottomOf="@id/rateBar"
       tools:text="@tools:sample/lorem"
     />
-  </android.support.constraint.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
-  <android.support.constraint.ConstraintLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/rateDislikeView"
     android:scaleX="0"
     android:scaleY="0"
@@ -194,6 +194,6 @@
       tools:text="@tools:sample/lorem/random"
     />
 
-  </android.support.constraint.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

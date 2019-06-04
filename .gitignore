@@ -12,6 +12,7 @@
 bin/
 gen/
 .DS_Store
+library/javadoc
 
 # Gradle files
 .gradle/
