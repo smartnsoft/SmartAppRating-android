@@ -6,15 +6,15 @@ Small library which can be used to display a rating popup. Different information
 
 ### JSON Configuration file
 
-With version 1.0.0, the only way to use this library is via a JSON configuration file.
+With version 1.2.0 or lower, the only way to use this library is via a JSON configuration file.
 A sample is available in this repository : [here](rateConfiguration.json)
 
-### Gradle (Internal Nexus repository)
+### Gradle
 
 **Gradle :**
 
 ```groovy
-implementation 'com.smartnsoft:smartapprating:1.0.0'
+implementation 'com.smartnsoft:smartapprating:1.2.0'
 ```
 
 ### Application configuration
@@ -93,8 +93,9 @@ final SmartAppRatingManager smartAppRatingManager = new Builder(this)
 
 ## Releases
 
-## 1.2.0 (TBD)
+## 1.2.0 (2019-06-05)
 * Added the ability to set custom drawable for each position of the rating bar
+* Available on Bintray !
 
 ## 1.1.0 (2018-06-05)
 * Updated ConstraintLayout to version 1.1.0
