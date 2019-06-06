@@ -54,7 +54,8 @@ dependencies {
 
 
 version = android.defaultConfig.versionName
-group = "com.smartnsoft"
+def artifactGroup = "com.smartnsoft"
+group = artifactGroup
 def artifactName = "smartapprating"
 description = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
 
@@ -114,7 +115,7 @@ publishing
     {
       artifact sourcesJar
       artifact javadocJar
-      groupId "com.smartnsoft"
+      groupId artifactGroup
       artifactId artifactName
       version android.defaultConfig.versionName
 
@@ -188,7 +189,7 @@ uploadArchives
       pom.project
       {
         name artifactName
-        groupId group
+        groupId artifactGroup
         artifactId artifactName
         version android.defaultConfig.versionName
         packaging "aar"
