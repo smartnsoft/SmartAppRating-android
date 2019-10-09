@@ -9,14 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import android.text.TextUtils;
-import android.util.Log;
 
+import com.smartnsoft.logger.Logger;
+import com.smartnsoft.logger.LoggerFactory;
 import com.smartnsoft.smartapprating.bo.Configuration;
 import com.smartnsoft.smartapprating.utils.DateUtils;
 import com.smartnsoft.smartapprating.ws.SmartAppRatingServices;
@@ -68,20 +70,23 @@ public final class SmartAppRatingManager
       return this;
     }
 
-    public Builder setConfigurationFileURL(@NonNull final String baseURL, @NonNull final String configurationFilePath)
+    public Builder setConfigurationFileURL(@NonNull final String baseURL,
+        @NonNull final String configurationFilePath)
     {
       this.baseURL = baseURL;
       this.configurationFilePath = configurationFilePath;
       return this;
     }
 
-    public Builder setRatePopupActivity(@NonNull Class<? extends AbstractSmartAppRatingActivity> ratePopupActivity)
+    public Builder setRatePopupActivity(
+        @NonNull Class<? extends AbstractSmartAppRatingActivity> ratePopupActivity)
     {
       this.ratePopupActivity = ratePopupActivity;
       return this;
     }
 
-    public Builder setCachePolicy(@NonNull File cacheDirectory, @IntRange(from = 1024 * 1024) int cacheSize)
+    public Builder setCachePolicy(@NonNull File cacheDirectory,
+        @IntRange(from = 1024 * 1024) int cacheSize)
     {
       this.cacheDirectory = cacheDirectory;
       this.cacheSize = cacheSize;
@@ -124,6 +129,7 @@ public final class SmartAppRatingManager
       final SmartAppRatingManager smartAppRatingManager = new SmartAppRatingManager(context, applicationId, applicationVersionName, baseURL, configurationFilePath, cacheDirectory, cacheSize);
       smartAppRatingManager.configuration = configuration;
       smartAppRatingManager.isInDevelopmentMode = isInDevelopmentMode;
+      log.setLogLevel(isInDevelopmentMode ? Log.DEBUG : Log.WARN);
       if (ratePopupActivity != null)
       {
         smartAppRatingManager.setRatingPopupActivityClass(ratePopupActivity);
@@ -132,7 +138,8 @@ public final class SmartAppRatingManager
     }
   }
 
-  public static void setRateLaterTimestamp(@NonNull SharedPreferences preferences, long updateLaterTimestamp)
+  public static void setRateLaterTimestamp(@NonNull SharedPreferences preferences,
+      long updateLaterTimestamp)
   {
     preferences.edit().putLong(SmartAppRatingManager.LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, updateLaterTimestamp).apply();
   }
@@ -176,7 +183,8 @@ public final class SmartAppRatingManager
     setNumberOfTimeLaterWasClicked(preferences, getNumberOfTimeLaterWasClicked(preferences) + 1);
   }
 
-  public static void setNumberOfSession(@NonNull SharedPreferences preferences, long newNumberOfSession)
+  public static void setNumberOfSession(@NonNull SharedPreferences preferences,
+      long newNumberOfSession)
   {
     preferences.edit().putLong(SmartAppRatingManager.NUMBER_OF_SESSION_PREFERENCE_KEY, newNumberOfSession).apply();
   }
@@ -211,7 +219,9 @@ public final class SmartAppRatingManager
 
   private static final long DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
-  private static final String TAG = "SmartAppRatingManager";
+  //private static final String TAG = "SmartAppRatingManager";
+
+  private static final Logger log = LoggerFactory.getInstance("SmartAppRatingManager");
 
   private final Context applicationContext;
 
@@ -234,7 +244,8 @@ public final class SmartAppRatingManager
   private Class<? extends AbstractSmartAppRatingActivity> ratingPopupActivityClass = SmartAppRatingActivity.class;
 
   SmartAppRatingManager(@NonNull Context context,
-      @NonNull final String applicationId, @NonNull final String applicationVersionName, @NonNull final String baseURL,
+      @NonNull final String applicationId, @NonNull final String applicationVersionName,
+      @NonNull final String baseURL,
       @NonNull final String configurationFilePath, @Nullable File cacheDirectory,
       int cacheSize)
   {
@@ -268,7 +279,8 @@ public final class SmartAppRatingManager
     });
   }
 
-  void setRatingPopupActivityClass(Class<? extends AbstractSmartAppRatingActivity> ratingPopupActivityClass)
+  void setRatingPopupActivityClass(
+      Class<? extends AbstractSmartAppRatingActivity> ratingPopupActivityClass)
   {
     this.ratingPopupActivityClass = ratingPopupActivityClass;
   }
@@ -280,13 +292,14 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "fetching configuration...");
+        log.debug("fetching configuration...");
       }
       this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
       {
 
         @Override
-        public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+        public void onResponse(@NonNull Call<Configuration> call,
+            @NonNull Response<Configuration> response)
         {
           if (response.isSuccessful())
           {
@@ -295,9 +308,9 @@ public final class SmartAppRatingManager
           }
           else
           {
-            if (isInDevelopmentMode)
+            if (log.isWarnEnabled())
             {
-              Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+              log.warn("Failed to retrieve configuration file : HTTP error code = " + response.code());
             }
           }
         }
@@ -305,9 +318,9 @@ public final class SmartAppRatingManager
         @Override
         public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
         {
-          if (isInDevelopmentMode)
+          if (log.isWarnEnabled())
           {
-            Log.w(TAG, "Failed to retrieve configuration file", t);
+            log.warn("Failed to retrieve configuration file", t);
           }
         }
       });
@@ -316,7 +329,7 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
+        log.debug("The SmartAppManager has been created without config URL, so we won't do anything.");
       }
     }
   }
@@ -332,13 +345,14 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "fetching configuration...");
+        log.debug("fetching configuration...");
       }
       this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
       {
 
         @Override
-        public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+        public void onResponse(@NonNull Call<Configuration> call,
+            @NonNull Response<Configuration> response)
         {
           if (response.isSuccessful())
           {
@@ -347,9 +361,9 @@ public final class SmartAppRatingManager
           }
           else
           {
-            if (isInDevelopmentMode)
+            if (log.isWarnEnabled())
             {
-              Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+              log.warn("Failed to retrieve configuration file : HTTP error code = " + response.code());
             }
           }
         }
@@ -357,9 +371,9 @@ public final class SmartAppRatingManager
         @Override
         public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
         {
-          if (isInDevelopmentMode)
+          if (log.isWarnEnabled())
           {
-            Log.w(TAG, "Failed to retrieve configuration file", t);
+            log.warn("Failed to retrieve configuration file", t);
           }
         }
       });
@@ -368,7 +382,7 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
+        log.debug("The SmartAppManager has been created without config URL, so we won't do anything.");
       }
     }
   }
@@ -380,13 +394,14 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "fetching configuration...");
+        log.debug("fetching configuration...");
       }
       this.smartAppRatingServices.getConfiguration(configurationFilePath, new Callback<Configuration>()
       {
 
         @Override
-        public void onResponse(@NonNull Call<Configuration> call, @NonNull Response<Configuration> response)
+        public void onResponse(@NonNull Call<Configuration> call,
+            @NonNull Response<Configuration> response)
         {
           if (response.isSuccessful())
           {
@@ -394,9 +409,9 @@ public final class SmartAppRatingManager
           }
           else
           {
-            if (isInDevelopmentMode)
+            if (log.isWarnEnabled())
             {
-              Log.w(TAG, "Failed to retrieve configuration file : HTTP error code = " + response.code());
+              log.warn("Failed to retrieve configuration file : HTTP error code = " + response.code());
             }
           }
         }
@@ -404,9 +419,9 @@ public final class SmartAppRatingManager
         @Override
         public void onFailure(@NonNull Call<Configuration> call, @NonNull Throwable t)
         {
-          if (isInDevelopmentMode)
+          if (log.isWarnEnabled())
           {
-            Log.w(TAG, "Failed to retrieve configuration file", t);
+            log.warn("Failed to retrieve configuration file", t);
           }
         }
       });
@@ -415,7 +430,7 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
+        log.debug("The SmartAppManager has been created without config URL, so we won't do anything.");
       }
     }
   }
@@ -424,7 +439,7 @@ public final class SmartAppRatingManager
   {
     if (isInDevelopmentMode)
     {
-      Log.d(TAG, "Configuration file has been retrieved with success !");
+      log.debug("Configuration file has been retrieved with success !");
     }
     this.configuration = configuration;
     increaseSessionNumberIfConditionsAreMet(getPreferences());
@@ -452,7 +467,7 @@ public final class SmartAppRatingManager
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "The SmartAppManager has been created without config URL, so we won't do anything.");
+        log.debug("The SmartAppManager has been created without config URL, so we won't do anything.");
       }
       return false;
     }
@@ -483,11 +498,11 @@ public final class SmartAppRatingManager
         && (configuration.minimumTimeGapBeforeAskingAgainInDays > 0 && getRateLaterTimestamp(sharedPreferences) + (configuration.minimumTimeGapBeforeAskingAgainInDays * SmartAppRatingManager.DAY_IN_MILLISECONDS) < System.currentTimeMillis())
         && (configuration.numberOfSessionBeforeAskingToRate > 0 && configuration.numberOfSessionBeforeAskingToRate <= SmartAppRatingManager.getNumberOfSession(sharedPreferences))
         && (configuration.maxNumberOfReminder > 0 && configuration.maxNumberOfReminder > SmartAppRatingManager.getNumberOfTimeLaterWasClicked(sharedPreferences))
-        )
+    )
     {
       if (isInDevelopmentMode)
       {
-        Log.d(TAG, "Try to display the rating popup");
+        log.debug("Try to display the rating popup");
       }
       return createRatePopupIntent();
     }
@@ -504,9 +519,9 @@ public final class SmartAppRatingManager
 
     if (ratePopupIntentWithoutVerification != null)
     {
-      if (isInDevelopmentMode)
+      if (log.isDebugEnabled())
       {
-        Log.d(TAG, "Try to display the rating popup");
+        log.debug("Try to display the rating popup");
       }
       applicationContext.startActivity(ratePopupIntentWithoutVerification);
     }

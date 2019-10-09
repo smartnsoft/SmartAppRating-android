@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.smartnsoft.logger.Logger;
+import com.smartnsoft.logger.LoggerFactory;
 import com.smartnsoft.smartapprating.bo.Configuration;
 import com.willy.ratingbar.BaseRatingBar;
 import com.willy.ratingbar.BaseRatingBar.OnRatingChangeListener;
@@ -39,8 +41,6 @@ public abstract class AbstractSmartAppRatingActivity
     extends AppCompatActivity
     implements OnClickListener, OnRatingChangeListener, OnRatingDoneListener, RatingScreenAnalyticsInterface
 {
-
-  private final static String TAG = "SmartAppRatingActivity";
 
   public static final String CONFIGURATION_EXTRA = "configurationExtra";
 
@@ -70,6 +70,8 @@ public abstract class AbstractSmartAppRatingActivity
 
   private boolean isInDevelopmentMode;
 
+  private final Logger log = LoggerFactory.getInstance(this.getClass().getSimpleName());
+
   @Override
   protected final void onCreate(Bundle savedInstanceState)
   {
@@ -86,6 +88,7 @@ public abstract class AbstractSmartAppRatingActivity
     {
       configuration = (Configuration) bundle.getSerializable(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA);
       isInDevelopmentMode = bundle.getBoolean(AbstractSmartAppRatingActivity.IS_IN_DEVELOPMENT_MODE_EXTRA, false);
+      log.setLogLevel(isInDevelopmentMode ? Log.DEBUG : Log.WARN);
       if (configuration == null)
       {
         finish();
@@ -131,18 +134,18 @@ public abstract class AbstractSmartAppRatingActivity
   @Override
   public void onRatingChange(BaseRatingBar baseRatingBar, float rating)
   {
-    if (isInDevelopmentMode)
+    if (log.isDebugEnabled())
     {
-      Log.d(TAG, "Rating is now = " + rating);
+      log.debug("Rating is now = " + rating);
     }
   }
 
   @Override
   public void onRatingDone(float rating)
   {
-    if (isInDevelopmentMode)
+    if(log.isDebugEnabled())
     {
-      Log.d(TAG, "User selected a rating of " + rating + "/5");
+      log.debug("User selected a rating of " + rating + "/5");
     }
     sendUserSetRating((int) rating);
 
