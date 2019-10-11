@@ -34,7 +34,7 @@ public final class SampleApplication
         .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
         //        .setConfiguration(new Configuration())
-        .setConfigurationFileURL("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
+        .configureWithJSON("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
         .build();
 
     SmartAppRatingManager.setUncaughtExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler());

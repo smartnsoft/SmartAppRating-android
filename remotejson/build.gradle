@@ -5,7 +5,7 @@ apply plugin: "com.jfrog.bintray"
 apply plugin: "maven"
 apply plugin: "maven-publish"
 
-def moduleArtifactId = project.artifactId
+def moduleArtifactId = project.artifactId + "-remotejson"
 
 android {
   compileSdkVersion rootProject.compileSdkVersion
@@ -47,17 +47,7 @@ dependencies {
 
   implementation("com.smartnsoft:logger:${logger_version}")
 
-  // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-core:${jackson_library_version}")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson_library_version}")
-  implementation("com.fasterxml.jackson.core:jackson-databind:${jackson_library_version}")
-
-  // Webservice
-  implementation("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
-  implementation("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
-
-  // SimpleRatingBar
-  api("com.github.smartnsoft:SimpleRatingBar:5e0efc58bc")
+  api project(":core")
 
   // Test
   testImplementation("junit:junit:4.12")

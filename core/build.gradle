@@ -1,0 +1,209 @@
+apply plugin: "com.android.library"
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+apply plugin: "com.jfrog.bintray"
+apply plugin: "maven"
+apply plugin: "maven-publish"
+
+def moduleArtifactId = project.artifactId + "-core"
+
+android {
+  compileSdkVersion rootProject.compileSdkVersion
+
+  defaultConfig {
+    minSdkVersion rootProject.minSdkVersion
+    targetSdkVersion rootProject.compileSdkVersion
+    versionCode rootProject.versionCode
+    versionName rootProject.versionName
+    resourcePrefix rootProject.artifactId + "_"
+    consumerProguardFiles 'proguard-rules.pro'
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+    debug
+    {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  compileOptions {
+    kotlinOptions.freeCompilerArgs += ['-module-name', "$groupId.$moduleArtifactId"]
+  }
+
+}
+
+dependencies {
+  implementation("androidx.core:core-ktx:1.0.0")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
+
+  implementation("androidx.appcompat:appcompat:1.0.0")
+  implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+  implementation("androidx.annotation:annotation:1.0.0")
+
+  implementation("com.smartnsoft:logger:${logger_version}")
+
+  // Jackson
+  implementation("com.fasterxml.jackson.core:jackson-core:${jackson_library_version}")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson_library_version}")
+  implementation("com.fasterxml.jackson.core:jackson-databind:${jackson_library_version}")
+
+  // Webservice
+  implementation("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
+  implementation("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
+
+  // SimpleRatingBar
+  api("com.github.smartnsoft:SimpleRatingBar:5e0efc58bc")
+
+  // Test
+  testImplementation("junit:junit:4.12")
+  androidTestImplementation("androidx.test:runner:1.2.0")
+  androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+}
+
+
+version = android.defaultConfig.versionName
+def artifactGroup = "com.smartnsoft"
+group = artifactGroup
+def artifactName = "smartapprating"
+description = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
+
+task sourcesJar(type: Jar) {
+  classifier = "sources"
+  from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+  // For now, we'll disable Javadoc because of Kotlin files not being supported
+  enabled = false
+
+  title = project.libraryName + " API"
+  description "Javadoc for the " + project.libraryName
+  source = android.sourceSets.main.java.srcDirs
+
+  options.charSet = "UTF-8"
+  options.overview = "src/main/javadoc/overview.html"
+  options.links = project.documentationReference
+
+  classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
+  failOnError = false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = "javadoc"
+  from javadoc.destinationDir
+  // options.encoding = 'UTF-8'
+}
+
+artifacts
+{
+  archives javadocJar
+  archives sourcesJar
+}
+
+def pomConfig = {
+  licenses
+  {
+    license
+    {
+      name "MIT License (MIT)"
+      url "https://opensource.org/licenses/MIT"
+      distribution "repo"
+    }
+  }
+}
+
+publishing
+{
+  publications
+  {
+    ReleasePublication(MavenPublication)
+    {
+      artifact sourcesJar
+      artifact javadocJar
+      groupId project.groupId
+      artifactId moduleArtifactId
+      version android.defaultConfig.versionName
+
+      pom.withXml
+      {
+        def root = asNode()
+        root.appendNode("description", project.artifactDescription)
+        root.appendNode("name", project.libraryName)
+        root.appendNode("url", "https://github.com/smartnsoft/" + project.repositoryName)
+        root.children().last() + pomConfig
+      }
+    }
+  }
+}
+
+//https://gist.github.com/bugs84/b7887fb5d7f9f2d484b8
+publishing.publications.all
+{
+  pom.withXml
+  {
+    asNode().dependencies."*".findAll()
+    {
+      it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+        dep.name == it.artifactId.text()
+      }
+    }.each
+    {
+      it.scope*.value = "compile"
+    }
+  }
+}
+
+bintray
+{
+  publications = ["ReleasePublication"]
+
+  pkg
+  {
+    repo = "maven"
+    name = project.libraryName
+    userOrg = "smartnsoft"
+    licenses = ["MIT"]
+    vcsUrl = "https://github.com/smartnsoft/" + project.repositoryName + ".git"
+    publish = true
+
+    version
+    {
+      name = android.defaultConfig.versionName
+      desc = project.artifactDescription
+      vcsTag = "v" + android.defaultConfig.versionName
+    }
+  }
+}
+
+uploadArchives
+{
+  repositories
+  {
+    mavenDeployer
+    {
+      repository(url: "https://api.bintray.com/maven/smartnsoft/maven/" + project.libraryName + "/;publish=1")
+      {
+        authentication(userName: findProperty("bintrayUsername") ?: "", password: findProperty("bintrayKey") ?: "")
+      }
+
+      snapshotRepository(url: findProperty("nexusSnapshotUrl") ?: "")
+      {
+        authentication(userName: findProperty("nexusUsername") ?: "", password: findProperty("nexusPassword") ?: "")
+      }
+
+      pom.project
+      {
+        name artifactName
+        groupId artifactGroup
+        artifactId artifactName
+        version android.defaultConfig.versionName
+        packaging "aar"
+      }
+    }
+  }
+}
