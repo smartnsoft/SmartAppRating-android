@@ -18,7 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit.Builder;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 /**
  * @author Adrien Vitti
@@ -54,7 +54,7 @@ public final class SmartAppRatingServices
 
     configurationAPI = new Builder()
         .baseUrl(baseURL)
-        .addConverterFactory(JacksonConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create())
         .client(client)
         .build()
         .create(ConfigurationAPI.class);

@@ -149,7 +149,7 @@ public abstract class AbstractSmartAppRatingActivity
     }
     sendUserSetRating((int) rating);
 
-    setSecondViewContent(configuration, rating >= configuration.minimumNumberOfStarBeforeRedirectToStore);
+    setSecondViewContent(configuration, rating >= configuration.getMinimumNumberOfStarBeforeRedirectToStore());
 
     firstScreen.animate().scaleX(0).scaleY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).setListener(new AnimatorListener()
     {
@@ -191,25 +191,25 @@ public abstract class AbstractSmartAppRatingActivity
   {
     if (isPositiveRating)
     {
-      setSecondScreenTitle(configuration.likePopupTitle);
-      setSecondScreenParagraph(configuration.likePopupContent);
-      setSecondScreenActionButtonText(configuration.likeActionButtonText);
-      setSecondScreenLaterButtonText(configuration.likeExitButtonText);
+      setSecondScreenTitle(configuration.getLikePopupTitle());
+      setSecondScreenParagraph(configuration.getLikePopupContent());
+      setSecondScreenActionButtonText(configuration.getLikeActionButtonText());
+      setSecondScreenLaterButtonText(configuration.getLikeExitButtonText());
     }
     else
     {
-      setSecondScreenTitle(configuration.dislikePopupTitle);
-      setSecondScreenParagraph(configuration.dislikePopupContent);
-      setSecondScreenActionButtonText(configuration.dislikeActionButtonText);
-      setSecondScreenLaterButtonText(configuration.dislikeExitButtonText);
+      setSecondScreenTitle(configuration.getDislikePopupTitle());
+      setSecondScreenParagraph(configuration.getDislikePopupContent());
+      setSecondScreenActionButtonText(configuration.getDislikeActionButtonText());
+      setSecondScreenLaterButtonText(configuration.getDislikeExitButtonText());
     }
   }
 
   protected void setFirstScreenContent(Configuration configuration)
   {
-    setFirstScreenTitle(configuration.ratePopupTitle);
-    setFirstScreenParagraph(configuration.ratePopupContent);
-    setFirstScreenLaterButtonText(configuration.likeExitButtonText);
+    setFirstScreenTitle(configuration.getRatePopupTitle());
+    setFirstScreenParagraph(configuration.getRatePopupContent());
+    setFirstScreenLaterButtonText(configuration.getLikeExitButtonText());
   }
 
   @Override
@@ -224,16 +224,16 @@ public abstract class AbstractSmartAppRatingActivity
   {
     if (view == dislikeActionButton)
     {
-      if (rateBar.getRating() >= configuration.minimumNumberOfStarBeforeRedirectToStore)
+      if (rateBar.getRating() >= configuration.getMinimumNumberOfStarBeforeRedirectToStore())
       {
         // open store
         try
         {
-          startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + configuration.applicationID)));
+          startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + configuration.getApplicationID())));
         }
         catch (android.content.ActivityNotFoundException anfe)
         {
-          startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + configuration.applicationID)));
+          startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + configuration.getApplicationID())));
         }
         sendRatingStoreActivate();
       }
@@ -252,7 +252,7 @@ public abstract class AbstractSmartAppRatingActivity
     }
     else if (view == dislikeExitButton)
     {
-      if (rateBar.getRating() >= configuration.minimumNumberOfStarBeforeRedirectToStore)
+      if (rateBar.getRating() >= configuration.getMinimumNumberOfStarBeforeRedirectToStore())
       {
         sendRatingStoreLater();
       }
@@ -269,9 +269,9 @@ public abstract class AbstractSmartAppRatingActivity
   {
     final Intent supportEmailIntent = new Intent(Intent.ACTION_SENDTO);
     supportEmailIntent.setData(Uri.parse("mailto:"));
-    supportEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { configuration.supportEmail });
-    supportEmailIntent.putExtra(Intent.EXTRA_SUBJECT, configuration.supportEmailSubject);
-    supportEmailIntent.putExtra(Intent.EXTRA_TEXT, configuration.supportEmailHeader + getResources().getString(R.string.smartapprating_email_footer, configuration.versionName, VERSION.RELEASE, Build.MODEL, getConnectivityNetworkType()));
+    supportEmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { configuration.getSupportEmail() });
+    supportEmailIntent.putExtra(Intent.EXTRA_SUBJECT, configuration.getSupportEmailSubject());
+    supportEmailIntent.putExtra(Intent.EXTRA_TEXT, configuration.getSupportEmailHeader() + getResources().getString(R.string.smartapprating_email_footer, configuration.getVersionName(), VERSION.RELEASE, Build.MODEL, getConnectivityNetworkType()));
     return supportEmailIntent;
   }
 

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.smartnsoft.smartapprating.RemoteConfigFactory;
 import com.smartnsoft.smartapprating.SmartAppRatingManager;
 import com.smartnsoft.smartapprating.SmartAppRatingManager.Builder;
 
@@ -34,8 +35,8 @@ public final class SampleApplication
         .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
         //        .setConfiguration(new Configuration())
-        .configureWithJSON("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
-        .build();
+        .setupRemoteJSONUri("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
+        .build(new RemoteConfigFactory());
 
     SmartAppRatingManager.setUncaughtExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler());
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);

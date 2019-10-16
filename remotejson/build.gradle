@@ -45,6 +45,11 @@ dependencies {
   implementation("androidx.constraintlayout:constraintlayout:1.1.3")
   implementation("androidx.annotation:annotation:1.0.0")
 
+  implementation('com.squareup.retrofit2:converter-moshi:2.6.2')
+
+  // Webservice
+  implementation("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
+
   implementation("com.smartnsoft:logger:${logger_version}")
 
   api project(":core")

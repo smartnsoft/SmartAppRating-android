@@ -17,7 +17,7 @@ import java.io.IOException
 
 /**
  *
- * @author Cyllene
+ * @author Adrien Vitti
  * @since 2019.10.11
  */
 class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
@@ -192,8 +192,8 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
    * @return true if the configuration file has been retrieved, false otherwise
    * @throws IOException The exception thrown by the network call
    */
-  @WorkerThread
   @Throws(IOException::class)
+  @WorkerThread
   override fun fetchConfigurationSync(): Boolean
   {
     this.smartAppRatingServices?.let { services ->
@@ -213,5 +213,39 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
     }
   }
 
+}
+
+@Suppress("unused")
+class JsonSmartAppRatingFactory : SmartAppRatingManager.SmartAppRatingFactory
+{
+
+  override fun create(
+      isInDevelopmentMode: Boolean,
+      baseURL: String?,
+      configurationFilePath: String?,
+      configuration: Configuration?,
+      context: Context,
+      cacheDirectory: File?,
+      cacheSize: Int,
+      appId: String,
+      appVersionName: String
+  ): SmartAppRatingManager
+  {
+    val baseApiUrl = baseURL ?: ""
+    val configurationFilePathUrl = configurationFilePath ?: ""
+
+    check((TextUtils.isEmpty(baseApiUrl) && TextUtils.isEmpty(configurationFilePathUrl)).not()) { "Unable to create the app rating manager because no base URL or path url were given" }
+
+    return JsonSmartAppRatingManager(
+        applicationContext = context,
+        applicationId = appId,
+        applicationVersionName = appVersionName,
+        isInDevelopmentMode = isInDevelopmentMode,
+        configurationFilePath = configurationFilePathUrl,
+        baseURL = baseApiUrl,
+        cacheDirectory = cacheDirectory,
+        cacheSize = cacheSize
+    )
+  }
 
 }

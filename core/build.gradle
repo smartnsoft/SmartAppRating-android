@@ -1,6 +1,7 @@
 apply plugin: "com.android.library"
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: "kotlin-kapt"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "maven"
 apply plugin: "maven-publish"
@@ -46,15 +47,8 @@ dependencies {
   implementation("androidx.annotation:annotation:1.0.0")
 
   implementation("com.smartnsoft:logger:${logger_version}")
-
-  // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-core:${jackson_library_version}")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:${jackson_library_version}")
-  implementation("com.fasterxml.jackson.core:jackson-databind:${jackson_library_version}")
-
-  // Webservice
-  implementation("com.squareup.retrofit2:retrofit:${retrofit_library_version}")
-  implementation("com.squareup.retrofit2:converter-jackson:${retrofit_library_version}")
+  api("com.squareup.moshi:moshi:${moshi_version}")
+  kapt("com.squareup.moshi:moshi-kotlin-codegen:${moshi_version}")
 
   // SimpleRatingBar
   api("com.github.smartnsoft:SimpleRatingBar:5e0efc58bc")

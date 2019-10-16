@@ -19,7 +19,7 @@ import java.util.*
 
 /**
  *
- * @author Cyllene
+ * @author Adrien Vitti
  * @since 2019.10.10
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -41,13 +41,20 @@ protected constructor(
 )
 {
 
-  enum class ConfigurationType
+  interface SmartAppRatingFactory
   {
 
-    JSON,
-    LocalConfig,
-    RemoteConfig
-
+    fun create(
+        isInDevelopmentMode: Boolean,
+        baseURL: String?,
+        configurationFilePath: String?,
+        configuration: Configuration?,
+        context: Context,
+        cacheDirectory: File?,
+        cacheSize: Int,
+        appId: String,
+        appVersionName: String
+    ): SmartAppRatingManager
   }
 
   class Builder(private val context: Context)
@@ -71,8 +78,6 @@ protected constructor(
 
     private var applicationVersionName: String? = null
 
-    private var configurationType: ConfigurationType = ConfigurationType.LocalConfig
-
     fun setIsInDevelopmentMode(isInDevelopmentMode: Boolean): Builder
     {
       this.isInDevelopmentMode = isInDevelopmentMode
@@ -80,28 +85,17 @@ protected constructor(
     }
 
     @JvmOverloads
-    fun configureWithJSON(baseURL: String,
-                          configurationFilePath: String,
-                          cacheDirectory: File? = null,
-                          @IntRange(from = (1024 * 1024).toLong()) cacheSize: Int = 0
+    fun setupRemoteJSONUri(baseURL: String,
+                           configurationFilePath: String,
+                           cacheDirectory: File? = null,
+                           @IntRange(from = (1024 * 1024).toLong()) cacheSize: Int = 0
     ): Builder
     {
-      this.configurationType = ConfigurationType.JSON
       this.baseURL = baseURL
       this.configurationFilePath = configurationFilePath
       this.cacheDirectory = cacheDirectory
       this.cacheSize = cacheSize
       return this
-    }
-
-    fun configureWithRemoteConfig()
-    {
-      this.configurationType = ConfigurationType.RemoteConfig
-    }
-
-    fun configureWithLocalConfig()
-    {
-      this.configurationType = ConfigurationType.LocalConfig
     }
 
     fun setRatePopupActivity(
@@ -129,28 +123,15 @@ protected constructor(
       return this
     }
 
-    fun build(): SmartAppRatingManager
+    fun build(factory: SmartAppRatingFactory = LocalSmartAppRatingFactory()): SmartAppRatingManager
     {
       val appId = applicationId ?: ""
       val appVersionName = applicationVersionName ?: ""
+
       check(!TextUtils.isEmpty(appId)) { "Unable to create the app rating manager because the application ID was not set" }
       check(!TextUtils.isEmpty(appVersionName)) { "Unable to create the app rating manager because the application ID was not set" }
 
-      val smartAppRatingManager = when (configurationType)
-      {
-        ConfigurationType.JSON         ->
-        {
-          buildJson(appId, appVersionName)
-        }
-        ConfigurationType.RemoteConfig ->
-        {
-          buildRemote(appId, appVersionName)
-        }
-        else                           ->
-        {
-          buildLocal(appId, appVersionName)
-        }
-      }
+      val smartAppRatingManager = factory.create(isInDevelopmentMode, baseURL, configurationFilePath, configuration, context, cacheDirectory, cacheSize, appId, appVersionName)
 
       smartAppRatingManager.configuration = configuration
       smartAppRatingManager.log.logLevel = if (isInDevelopmentMode) Log.DEBUG else Log.WARN
@@ -160,46 +141,6 @@ protected constructor(
       return smartAppRatingManager
     }
 
-    private fun buildJson(appId: String, appVersionName: String): SmartAppRatingManager
-    {
-      val baseApiUrl = baseURL ?: ""
-      val configurationFilePathUrl = configurationFilePath ?: ""
-
-      check((TextUtils.isEmpty(baseApiUrl) && TextUtils.isEmpty(configurationFilePathUrl)).not()) { "Unable to create the app rating manager because no base URL or path url were given" }
-
-      return JsonSmartAppRatingManager(
-          applicationContext = context,
-          applicationId = appId,
-          applicationVersionName = appVersionName,
-          isInDevelopmentMode = isInDevelopmentMode,
-          configurationFilePath = configurationFilePathUrl,
-          baseURL = baseApiUrl,
-          cacheDirectory = cacheDirectory,
-          cacheSize = cacheSize
-      )
-    }
-
-    private fun buildLocal(appId: String, appVersionName: String): SmartAppRatingManager
-    {
-      check(configuration != null) { "Unable to create the app rating manager because no configuration was given" }
-
-      return LocalSmartAppRatingManager(
-          applicationContext = context,
-          applicationId = appId,
-          applicationVersionName = appVersionName,
-          isInDevelopmentMode = isInDevelopmentMode
-      )
-    }
-
-    private fun buildRemote(appId: String, appVersionName: String): SmartAppRatingManager
-    {
-      return RemoteSmartAppRatingManager(
-          applicationContext = context,
-          applicationId = appId,
-          applicationVersionName = appVersionName,
-          isInDevelopmentMode = isInDevelopmentMode
-      )
-    }
   }
 
   companion object
@@ -436,6 +377,7 @@ protected constructor(
   }
 
   /**
+   *
    * @return true if the configuration file has been retrieved, false otherwise
    * @throws IOException The exception thrown by the network call
    */
