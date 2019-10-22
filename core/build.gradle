@@ -194,7 +194,7 @@ uploadArchives
       {
         name artifactName
         groupId artifactGroup
-        artifactId artifactName
+        artifactId moduleArtifactId
         version android.defaultConfig.versionName
         packaging "aar"
       }

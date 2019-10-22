@@ -56,7 +56,8 @@ dependencies {
 
   implementation("com.smartnsoft:logger:${logger_version}")
 
-  api project(":core")
+  //api project(":core")
+  api("${groupId}:${artifactId}-core:${versionName}")
 
   // Test
   testImplementation("junit:junit:4.12")
@@ -199,7 +200,7 @@ uploadArchives
       {
         name artifactName
         groupId artifactGroup
-        artifactId artifactName
+        artifactId moduleArtifactId
         version android.defaultConfig.versionName
         packaging "aar"
       }
