@@ -4,9 +4,11 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.smartnsoft.smartapprating.JsonConfigFactory;
 import com.smartnsoft.smartapprating.RemoteConfigFactory;
 import com.smartnsoft.smartapprating.SmartAppRatingManager;
 import com.smartnsoft.smartapprating.SmartAppRatingManager.Builder;
+import com.smartnsoft.smartapprating.bo.Configuration;
 
 /**
  * @author Adrien Vitti
@@ -34,9 +36,10 @@ public final class SampleApplication
         .setApplicationId(BuildConfig.DEBUG ? "com.smartnsoft.metro" : BuildConfig.APPLICATION_ID)
         .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
-        //        .setConfiguration(new Configuration())
-        .setupRemoteJSONUri("https://next.json-generator.com/", "api/json/get/4yBX9X0CN")
-        .build(new RemoteConfigFactory());
+        .setFallbackConfiguration(new Configuration())
+        .setFactory(new JsonConfigFactory("https://next.json-generator.com/", "api/json/get/4yBX9X0CN"))
+        .setFactory(new RemoteConfigFactory())
+        .build();
 
     SmartAppRatingManager.setUncaughtExceptionHandler(this, Thread.getDefaultUncaughtExceptionHandler());
     final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);

@@ -217,12 +217,8 @@ constructor
 
   override fun create(
       isInDevelopmentMode: Boolean,
-      baseURL: String?,
-      configurationFilePath: String?,
       configuration: Configuration?,
       context: Context,
-      cacheDirectory: File?,
-      cacheSize: Int,
       appId: String,
       appVersionName: String
   ): SmartAppRatingManager

@@ -40,17 +40,13 @@ class LocalSmartAppRatingManager(
 }
 
 @Suppress("unused")
-class LocalSmartAppRatingFactory : SmartAppRatingManager.SmartAppRatingFactory
+class LocalConfigFactory : SmartAppRatingManager.SmartAppRatingFactory
 {
 
   override fun create(
       isInDevelopmentMode: Boolean,
-      baseURL: String?,
-      configurationFilePath: String?,
       configuration: Configuration?,
       context: Context,
-      cacheDirectory: File?,
-      cacheSize: Int,
       appId: String,
       appVersionName: String
   ): SmartAppRatingManager

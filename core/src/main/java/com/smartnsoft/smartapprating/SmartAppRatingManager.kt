@@ -7,7 +7,6 @@ import android.preference.PreferenceManager
 import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.AnyThread
-import androidx.annotation.IntRange
 import androidx.annotation.WorkerThread
 import com.smartnsoft.logger.Logger
 import com.smartnsoft.logger.LoggerFactory
@@ -46,12 +45,8 @@ protected constructor(
 
     fun create(
         isInDevelopmentMode: Boolean,
-        baseURL: String?,
-        configurationFilePath: String?,
         configuration: Configuration?,
         context: Context,
-        cacheDirectory: File?,
-        cacheSize: Int,
         appId: String,
         appVersionName: String
     ): SmartAppRatingManager
@@ -62,39 +57,19 @@ protected constructor(
 
     private var isInDevelopmentMode: Boolean = false
 
-    private var baseURL: String? = null
-
-    private var configurationFilePath: String? = null
-
-    private var cacheDirectory: File? = null
-
     private var configuration: Configuration? = null
 
     private var ratePopupActivity: Class<out AbstractSmartAppRatingActivity>? = null
-
-    private var cacheSize: Int = 0
 
     private var applicationId: String? = null
 
     private var applicationVersionName: String? = null
 
+    private var factory: SmartAppRatingFactory = LocalConfigFactory()
+
     fun setIsInDevelopmentMode(isInDevelopmentMode: Boolean): Builder
     {
       this.isInDevelopmentMode = isInDevelopmentMode
-      return this
-    }
-
-    @JvmOverloads
-    fun setupRemoteJSONUri(baseURL: String,
-                           configurationFilePath: String,
-                           cacheDirectory: File? = null,
-                           @IntRange(from = (1024 * 1024).toLong()) cacheSize: Int = 0
-    ): Builder
-    {
-      this.baseURL = baseURL
-      this.configurationFilePath = configurationFilePath
-      this.cacheDirectory = cacheDirectory
-      this.cacheSize = cacheSize
       return this
     }
 
@@ -123,7 +98,13 @@ protected constructor(
       return this
     }
 
-    fun build(factory: SmartAppRatingFactory = LocalSmartAppRatingFactory()): SmartAppRatingManager
+    fun setFactory(factory: SmartAppRatingFactory): Builder
+    {
+      this.factory = factory
+      return this
+    }
+
+    fun build(): SmartAppRatingManager
     {
       val appId = applicationId ?: ""
       val appVersionName = applicationVersionName ?: ""
@@ -131,7 +112,7 @@ protected constructor(
       check(!TextUtils.isEmpty(appId)) { "Unable to create the app rating manager because the application ID was not set" }
       check(!TextUtils.isEmpty(appVersionName)) { "Unable to create the app rating manager because the application ID was not set" }
 
-      val smartAppRatingManager = factory.create(isInDevelopmentMode, baseURL, configurationFilePath, configuration, context, cacheDirectory, cacheSize, appId, appVersionName)
+      val smartAppRatingManager = factory.create(isInDevelopmentMode, configuration, context, appId, appVersionName)
 
       smartAppRatingManager.configuration = configuration
       smartAppRatingManager.log.logLevel = if (isInDevelopmentMode) Log.DEBUG else Log.WARN

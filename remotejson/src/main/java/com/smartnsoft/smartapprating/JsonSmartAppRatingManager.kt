@@ -3,6 +3,7 @@ package com.smartnsoft.smartapprating
 import android.content.Context
 import android.text.TextUtils
 import androidx.annotation.AnyThread
+import androidx.annotation.IntRange
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.annotation.WorkerThread
@@ -216,23 +217,27 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
 }
 
 @Suppress("unused")
-class JsonSmartAppRatingFactory : SmartAppRatingManager.SmartAppRatingFactory
+class JsonConfigFactory
+@JvmOverloads
+constructor
+(
+    private val baseURL: String,
+    private val configurationFilePath: String,
+    private val cacheDirectory: File? = null,
+    @IntRange(from = (1024 * 1024).toLong()) val cacheSize: Int = 0
+) : SmartAppRatingManager.SmartAppRatingFactory
 {
 
   override fun create(
       isInDevelopmentMode: Boolean,
-      baseURL: String?,
-      configurationFilePath: String?,
       configuration: Configuration?,
       context: Context,
-      cacheDirectory: File?,
-      cacheSize: Int,
       appId: String,
       appVersionName: String
   ): SmartAppRatingManager
   {
-    val baseApiUrl = baseURL ?: ""
-    val configurationFilePathUrl = configurationFilePath ?: ""
+    val baseApiUrl = baseURL
+    val configurationFilePathUrl = configurationFilePath
 
     check((TextUtils.isEmpty(baseApiUrl) && TextUtils.isEmpty(configurationFilePathUrl)).not()) { "Unable to create the app rating manager because no base URL or path url were given" }
 

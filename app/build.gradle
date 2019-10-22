@@ -38,6 +38,7 @@ dependencies {
 
   implementation project(":core")
   implementation project(":remoteconfig")
+  implementation project(":remotejson")
 
   testImplementation("junit:junit:4.12")
   androidTestImplementation("androidx.test:runner:1.2.0")
