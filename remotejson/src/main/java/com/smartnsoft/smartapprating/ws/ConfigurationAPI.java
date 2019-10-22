@@ -12,7 +12,7 @@ import retrofit2.http.Path;
  * @since 2018.01.29
  */
 
-public interface ConfigurationAPI
+interface ConfigurationAPI
 {
 
   @GET("/{configurationFileName}")

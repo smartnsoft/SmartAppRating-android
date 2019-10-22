@@ -17,16 +17,16 @@ data class Configuration(
     var numberOfSessionBeforeAskingToRate: Int = -1,
 
     @Json(name = "maxNumberOfReminder")
-    var maxNumberOfReminder: Int = Configuration.MAXIMUM_NUMBER_OF_POPUP_REMINDER,
+    var maxNumberOfReminder: Int = MAXIMUM_NUMBER_OF_POPUP_REMINDER,
 
     @Json(name = "daysWithoutCrash")
-    var minimumTimeGapAfterACrashInDays: Double = Configuration.MINIMUM_TIME_GAP_AFTER_A_CRASH_IN_DAYS,
+    var minimumTimeGapAfterACrashInDays: Double = MINIMUM_TIME_GAP_AFTER_A_CRASH_IN_DAYS,
 
     @Json(name = "daysBeforeAskingAgain")
-    var minimumTimeGapBeforeAskingAgainInDays: Double = Configuration.MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN_IN_DAYS,
+    var minimumTimeGapBeforeAskingAgainInDays: Double = MINIMUM_TIME_GAP_BEFORE_ASKING_AGAIN_IN_DAYS,
 
     @Json(name = "maxDaysBetweenSession")
-    var maxDaysBetweenSession: Int = Configuration.MAXIMUM_TIME_GAP_BETWEEN_SESSION_IN_DAYS,
+    var maxDaysBetweenSession: Int = MAXIMUM_TIME_GAP_BETWEEN_SESSION_IN_DAYS,
 
     // region First screen : Rate App
     @Json(name = "mainTitle")

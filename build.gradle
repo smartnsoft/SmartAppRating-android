@@ -67,3 +67,19 @@ allprojects {
 task clean(type: Delete) {
   delete rootProject.buildDir
 }
+
+task releaseCore(dependsOn: [':core:uploadArchives']) {
+}
+
+task releaseRemoteConfig(dependsOn: [':remoteconfig:uploadArchives']) {
+}
+
+task releaseRemoteJson(dependsOn: [':remotejson:uploadArchives']) {
+}
+
+task releaseAll(dependsOn:
+['releaseCore',
+ 'releaseRemoteConfig',
+ 'releaseRemoteJson',
+]) {
+}

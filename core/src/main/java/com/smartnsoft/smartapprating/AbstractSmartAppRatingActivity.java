@@ -36,7 +36,7 @@ import com.willy.ratingbar.ScaleRatingBar;
  * @author Adrien Vitti
  * @since 2018.01.29
  */
-@SuppressWarnings({ "unused", "WeakerAccess" })
+@SuppressWarnings({ "unused" })
 public abstract class AbstractSmartAppRatingActivity
     extends AppCompatActivity
     implements OnClickListener, OnRatingChangeListener, OnRatingDoneListener, RatingScreenAnalyticsInterface

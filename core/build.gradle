@@ -1,6 +1,6 @@
 apply plugin: "com.android.library"
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: "kotlin-kapt"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "maven"
@@ -67,7 +67,7 @@ def artifactName = "smartapprating"
 description = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
 
 task sourcesJar(type: Jar) {
-  classifier = "sources"
+  archiveClassifier.set("sources")
   from android.sourceSets.main.java.srcDirs
 }
 
@@ -88,7 +88,7 @@ task javadoc(type: Javadoc) {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = "javadoc"
+  archiveClassifier.set("javadoc")
   from javadoc.destinationDir
   // options.encoding = 'UTF-8'
 }

@@ -9,51 +9,51 @@ package com.smartnsoft.smartapprating.bo
 data class RemoteConfigMatchingInformation
 @JvmOverloads
 constructor(
-    val rateAppDisabled: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_RATING_DISABLED,
-    val displaySessionCount: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DISPLAY_SESSION_COUNT,
-    val maxNumberOfReminders: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_MAX_NUMBER_REMINDERS,
+    val rateAppDisabled: String = REMOTE_CONFIG_RATING_DISABLED,
+    val displaySessionCount: String = REMOTE_CONFIG_DISPLAY_SESSION_COUNT,
+    val maxNumberOfReminders: String = REMOTE_CONFIG_MAX_NUMBER_REMINDERS,
 
-    var minimumTimeGapAfterACrashInDays: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DAYS_WITHOUT_CRASH,
+    var minimumTimeGapAfterACrashInDays: String = REMOTE_CONFIG_DAYS_WITHOUT_CRASH,
 
-    var minimumTimeGapBeforeAskingAgainInDays: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DAYS_BEFORE_ASKING_AGAIN,
+    var minimumTimeGapBeforeAskingAgainInDays: String = REMOTE_CONFIG_DAYS_BEFORE_ASKING_AGAIN,
 
-    var maxDaysBetweenSession: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_MAX_DAYS_BETWEEN_SESSION,
+    var maxDaysBetweenSession: String = REMOTE_CONFIG_MAX_DAYS_BETWEEN_SESSION,
 
     // region First screen : Rate App
-    var ratePopupTitle: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_MAIN_TITLE,
+    var ratePopupTitle: String = REMOTE_CONFIG_MAIN_TITLE,
 
-    var ratePopupContent: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_MAIN_MESSAGE,
+    var ratePopupContent: String = REMOTE_CONFIG_MAIN_MESSAGE,
 
-    var minimumNumberOfStarBeforeRedirectToStore: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_POSITIVE_STAR_THRESHOLD,
+    var minimumNumberOfStarBeforeRedirectToStore: String = REMOTE_CONFIG_POSITIVE_STAR_THRESHOLD,
     // endregion First screen
 
     // region Second screen : Negative or neutral rating
-    var dislikePopupTitle: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DISLIKE_MAIN_TITLE,
+    var dislikePopupTitle: String = REMOTE_CONFIG_DISLIKE_MAIN_TITLE,
 
-    var dislikePopupContent: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DISLIKE_MAIN_MESSAGE,
+    var dislikePopupContent: String = REMOTE_CONFIG_DISLIKE_MAIN_MESSAGE,
 
-    var dislikeActionButtonText: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DISLIKE_ACTION_BUTTON,
+    var dislikeActionButtonText: String = REMOTE_CONFIG_DISLIKE_ACTION_BUTTON,
 
-    var dislikeExitButtonText: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_DISLIKE_EXIT_BUTTON,
+    var dislikeExitButtonText: String = REMOTE_CONFIG_DISLIKE_EXIT_BUTTON,
     // endregion Second screen
 
     // region Third screen : Positive rating
-    var likePopupTitle: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_LIKE_MAIN_TITLE,
+    var likePopupTitle: String = REMOTE_CONFIG_LIKE_MAIN_TITLE,
 
-    var likePopupContent: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_LIKE_MAIN_MESSAGE,
+    var likePopupContent: String = REMOTE_CONFIG_LIKE_MAIN_MESSAGE,
 
-    var likeActionButtonText: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_LIKE_ACTION_BUTTON,
+    var likeActionButtonText: String = REMOTE_CONFIG_LIKE_ACTION_BUTTON,
 
-    var likeExitButtonText: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_LIKE_EXIT_BUTTON,
+    var likeExitButtonText: String = REMOTE_CONFIG_LIKE_EXIT_BUTTON,
     // endregion Third screen
 
-    var supportEmail: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_SUPPORT_EMAIL,
+    var supportEmail: String = REMOTE_CONFIG_SUPPORT_EMAIL,
 
-    var supportEmailSubject: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_SUPPORT_EMAIL_SUBJECT,
+    var supportEmailSubject: String = REMOTE_CONFIG_SUPPORT_EMAIL_SUBJECT,
 
-    var supportEmailHeader: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_SUPPORT_EMAIL_FOOTER,
+    var supportEmailHeader: String = REMOTE_CONFIG_SUPPORT_EMAIL_FOOTER,
 
-    var jsonField: String = RemoteConfigMatchingInformation.REMOTE_CONFIG_JSON_FIELD
+    var jsonField: String = REMOTE_CONFIG_JSON_FIELD
 )
 {
 

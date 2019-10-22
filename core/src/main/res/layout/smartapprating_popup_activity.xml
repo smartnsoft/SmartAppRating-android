@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@color/smartapprating_white_dimmed_background"
-  android:paddingEnd="20dip"
-  android:paddingLeft="20dip"
-  android:paddingRight="20dip"
   android:paddingStart="20dip"
+  android:paddingLeft="20dip"
+  android:paddingEnd="20dip"
+  android:paddingRight="20dip"
   tools:ignore="MissingPrefix"
 >
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/rateMainView"
-    tools:visibility="visible"
     style="@style/smartapprating_CardStyle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:visibility="visible"
   >
-
+    
     <TextView
       android:id="@+id/title"
       android:layout_width="0dp"
@@ -35,17 +41,17 @@
       app:layout_constraintVertical_chainStyle="packed"
       tools:text="@tools:sample/lorem"
     />
-
+    
     <TextView
       android:id="@+id/paragraph"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:layout_marginEnd="10dip"
-      android:layout_marginLeft="10dip"
-      android:layout_marginRight="10dip"
       android:layout_marginStart="10dip"
+      android:layout_marginLeft="10dip"
       android:layout_marginTop="20dip"
+      android:layout_marginEnd="10dip"
+      android:layout_marginRight="10dip"
       android:gravity="center_horizontal"
       android:padding="10dip"
       android:textColor="@color/smartapprating_very_dark_gray"
@@ -56,9 +62,10 @@
       app:layout_constraintTop_toBottomOf="@id/title"
       tools:text="@tools:sample/lorem"
     />
-
+    
     <com.willy.ratingbar.ScaleRatingBar
       android:id="@+id/rateBar"
+      style="@style/smartapprating_SimpleRatingBar"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="20dip"
@@ -68,16 +75,15 @@
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toBottomOf="@id/paragraph"
-      style="@style/smartapprating_SimpleRatingBar"
     />
-
+    
     <TextView
       android:id="@+id/later"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:layout_marginBottom="10dip"
       android:layout_marginTop="0dip"
+      android:layout_marginBottom="10dip"
       android:background="@drawable/smartapprating_white_button_background"
       android:gravity="center_horizontal"
       android:padding="15dip"
@@ -90,18 +96,24 @@
       tools:text="@tools:sample/lorem"
     />
   </androidx.constraintlayout.widget.ConstraintLayout>
-
+  
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/rateDislikeView"
+    style="@style/smartapprating_CardStyle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
     android:scaleX="0"
     android:scaleY="0"
     android:visibility="invisible"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
     tools:scaleX="1"
     tools:scaleY="1"
     tools:visibility="gone"
-    style="@style/smartapprating_CardStyle"
   >
-
+    
     <TextView
       android:id="@+id/dislikeTitle"
       android:layout_width="0dp"
@@ -120,17 +132,17 @@
       app:layout_constraintVertical_chainStyle="packed"
       tools:text="@tools:sample/lorem/random"
     />
-
+    
     <TextView
       android:id="@+id/dislikeParagraph"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:layout_marginEnd="10dip"
-      android:layout_marginLeft="10dip"
-      android:layout_marginRight="10dip"
       android:layout_marginStart="10dip"
+      android:layout_marginLeft="10dip"
       android:layout_marginTop="20dip"
+      android:layout_marginEnd="10dip"
+      android:layout_marginRight="10dip"
       android:gravity="center_horizontal"
       android:maxLines="5"
       android:padding="10dip"
@@ -142,27 +154,27 @@
       app:layout_constraintTop_toBottomOf="@id/dislikeTitle"
       tools:text="@tools:sample/lorem/random"
     />
-
+    
     <TextView
       android:id="@+id/dislikeActionButton"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:layout_marginBottom="20dip"
-      android:layout_marginEnd="20dip"
-      android:layout_marginLeft="20dip"
-      android:layout_marginRight="20dip"
       android:layout_marginStart="20dip"
+      android:layout_marginLeft="20dip"
       android:layout_marginTop="20dp"
+      android:layout_marginEnd="20dip"
+      android:layout_marginRight="20dip"
+      android:layout_marginBottom="20dip"
       android:background="@drawable/smartapprating_blue_rnd_btn"
       android:gravity="center_horizontal"
       android:maxLines="3"
-      android:paddingBottom="15dip"
-      android:paddingEnd="10dp"
-      android:paddingLeft="10dp"
-      android:paddingRight="10dp"
       android:paddingStart="10dp"
+      android:paddingLeft="10dp"
       android:paddingTop="15dip"
+      android:paddingEnd="10dp"
+      android:paddingRight="10dp"
+      android:paddingBottom="15dip"
       android:textColor="@color/smartapprating_white"
       android:textSize="18sp"
       app:layout_constraintBottom_toTopOf="@id/dislikeExitButton"
@@ -171,18 +183,18 @@
       app:layout_constraintTop_toBottomOf="@id/dislikeParagraph"
       tools:text="@tools:sample/lorem"
     />
-
+    
     <TextView
       android:id="@+id/dislikeExitButton"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:layout_marginBottom="10dip"
       android:layout_marginTop="20dip"
+      android:layout_marginBottom="10dip"
       android:background="@drawable/smartapprating_white_button_background"
       android:gravity="center_horizontal"
-      android:maxLines="3"
       android:maxWidth="300dp"
+      android:maxLines="3"
       android:padding="10dip"
       android:textColor="@color/smartapprating_very_dark_gray"
       app:layout_constraintBottom_toBottomOf="parent"
@@ -193,7 +205,7 @@
       app:layout_constraintWidth_percent=".6"
       tools:text="@tools:sample/lorem/random"
     />
-
+  
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
