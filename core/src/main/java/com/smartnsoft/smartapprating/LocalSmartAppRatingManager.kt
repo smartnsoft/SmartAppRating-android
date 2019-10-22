@@ -3,7 +3,6 @@ package com.smartnsoft.smartapprating
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.smartnsoft.smartapprating.bo.Configuration
-import java.io.File
 
 /**
  *
@@ -16,15 +15,18 @@ class LocalSmartAppRatingManager(
     isInDevelopmentMode: Boolean,
     configuration: Configuration? = null,
     applicationContext: Context
-) : SmartAppRatingManager(applicationId, applicationVersionName, isInDevelopmentMode, configuration, applicationContext)
+) : SmartAppRatingManager(
+    applicationId,
+    applicationVersionName,
+    isInDevelopmentMode,
+    configuration,
+    applicationContext
+)
 {
 
-  override fun fetchConfigurationAndTryToDisplayPopup()
+  override fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean)
   {
-  }
 
-  override fun fetchConfigurationDisplayPopupWithoutVerification()
-  {
   }
 
   override fun fetchConfiguration()

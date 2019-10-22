@@ -12,7 +12,6 @@ import com.smartnsoft.logger.Logger
 import com.smartnsoft.logger.LoggerFactory
 import com.smartnsoft.smartapprating.bo.Configuration
 import com.smartnsoft.smartapprating.utils.DateUtils
-import java.io.File
 import java.io.IOException
 import java.util.*
 
@@ -235,50 +234,21 @@ protected constructor(
   protected val log: Logger = LoggerFactory.getInstance("SmartAppRatingManager")
 
   /**
-   * This method allow you to display a rating popup even if conditions are not met.
-   * As a safety it cannot be used when developmentMode is not activated.
+   * This method will display the rating popup if conditions are met.
+   * To force the popup, you must activate development mode and set [withoutVerification] to true
    */
-  fun showRatePopupWithoutVerification()
+  @JvmOverloads
+  fun showRatePopup(withoutVerification: Boolean = false)
   {
-    val ratePopupIntentWithoutVerification = getRatePopupIntentWithoutVerification()
-
-    if (ratePopupIntentWithoutVerification != null)
+    val ratingPopupIntent = getRatingPopupIntent(withoutVerification)
+    if (ratingPopupIntent != null)
     {
       if (log.isDebugEnabled)
       {
         log.debug("Try to display the rating popup")
       }
-      applicationContext.startActivity(ratePopupIntentWithoutVerification)
+      applicationContext.startActivity(ratingPopupIntent)
     }
-  }
-
-  private fun createRatePopupIntent(): Intent?
-  {
-    return configuration?.let { configuration ->
-      configuration.versionName = applicationVersionName
-      configuration.applicationID = applicationId
-      Intent(applicationContext, ratingPopupActivityClass).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration)
-        putExtra(AbstractSmartAppRatingActivity.IS_IN_DEVELOPMENT_MODE_EXTRA, isInDevelopmentMode)
-      }
-    }
-  }
-
-  /*
-   * This method allow you to get the rating popup intent even if conditions are not met.
-   * As a safety it will return null if developmentMode is not activated or if configuration is not set.
-   */
-  fun getRatePopupIntentWithoutVerification(): Intent?
-  {
-    if (isInDevelopmentMode)
-    {
-      if (configuration != null)
-      {
-        return createRatePopupIntent()
-      }
-    }
-    return null
   }
 
   fun increaseSessionNumberIfConditionsAreMet(sharedPreferences: SharedPreferences)
@@ -298,13 +268,26 @@ protected constructor(
     sharedPreferences.edit().putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, currentTimeMillis).apply()
   }
 
-  protected fun getPreferences(): SharedPreferences
+  /**
+   * This method will give you the intent to launch the rating popup intent if conditions are met.
+   * To force the creation of the intent, you must activate development mode and set
+   * [withoutVerification] to true
+   */
+  @JvmOverloads
+  fun getRatingPopupIntent(withoutVerification: Boolean = false): Intent?
   {
-    return PreferenceManager.getDefaultSharedPreferences(applicationContext)
-  }
+    if (withoutVerification)
+    {
+      if (isInDevelopmentMode)
+      {
+        if (configuration != null)
+        {
+          return createRatePopupIntent()
+        }
+      }
+      return null
+    }
 
-  fun getRatingPopupIntent(): Intent?
-  {
     val sharedPreferences = getPreferences()
     configuration?.let { conf ->
       if (conf.isRateAppDisabled.not()
@@ -324,28 +307,44 @@ protected constructor(
     return null
   }
 
-  fun showRatePopup()
+  /**
+   * This method will retrieve configuration and then try to display the rating popup if conditions
+   * are met and [tryToDisplayPopup] is set to true.
+   * To force the popup, you must activate development mode and set [withoutVerification] to true
+   */
+  @AnyThread
+  @JvmOverloads
+  fun fetchConfig(tryToDisplayPopup: Boolean = false, withoutVerification: Boolean = false)
   {
-    val ratingPopupIntent = getRatingPopupIntent()
-    if (ratingPopupIntent != null)
+    if (tryToDisplayPopup)
     {
-      applicationContext.startActivity(ratingPopupIntent)
+      fetchConfigurationAndTryToDisplayPopup(withoutVerification)
+    }
+    else
+    {
+      fetchConfiguration()
     }
   }
 
-
-  @AnyThread
-  abstract fun fetchConfigurationAndTryToDisplayPopup()
-
   /**
-   * This method allow you to fetch and display a rating popup even if conditions are not met.
-   * As a safety it cannot be used when developmentMode is not activated.
+   *
+   * @return true if the configuration file has been retrieved, false otherwise
+   * @throws IOException The exception thrown by the network call
    */
-  @AnyThread
-  abstract fun fetchConfigurationDisplayPopupWithoutVerification()
+  @WorkerThread
+  @Throws(IOException::class)
+  abstract fun fetchConfigurationSync(): Boolean
+
+  protected fun getPreferences(): SharedPreferences
+  {
+    return PreferenceManager.getDefaultSharedPreferences(applicationContext)
+  }
 
   @AnyThread
-  abstract fun fetchConfiguration()
+  protected abstract fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean = false)
+
+  @AnyThread
+  protected abstract fun fetchConfiguration()
 
   protected fun storeConfiguration(configuration: Configuration?)
   {
@@ -357,13 +356,17 @@ protected constructor(
     increaseSessionNumberIfConditionsAreMet(getPreferences())
   }
 
-  /**
-   *
-   * @return true if the configuration file has been retrieved, false otherwise
-   * @throws IOException The exception thrown by the network call
-   */
-  @WorkerThread
-  @Throws(IOException::class)
-  abstract fun fetchConfigurationSync(): Boolean
+  private fun createRatePopupIntent(): Intent?
+  {
+    return configuration?.let { configuration ->
+      configuration.versionName = applicationVersionName
+      configuration.applicationID = applicationId
+      Intent(applicationContext, ratingPopupActivityClass).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        putExtra(AbstractSmartAppRatingActivity.CONFIGURATION_EXTRA, configuration)
+        putExtra(AbstractSmartAppRatingActivity.IS_IN_DEVELOPMENT_MODE_EXTRA, isInDevelopmentMode)
+      }
+    }
+  }
 
 }

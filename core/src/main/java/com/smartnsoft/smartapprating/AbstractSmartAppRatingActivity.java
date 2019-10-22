@@ -68,7 +68,7 @@ public abstract class AbstractSmartAppRatingActivity
 
   protected Configuration configuration;
 
-  private boolean isInDevelopmentMode;
+  protected boolean isInDevelopmentMode;
 
   private final Logger log = LoggerFactory.getInstance(this.getClass().getSimpleName());
 

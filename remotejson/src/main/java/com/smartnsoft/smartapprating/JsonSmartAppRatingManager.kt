@@ -30,7 +30,13 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
                                 @NonNull configurationFilePath: String,
                                 @Nullable val cacheDirectory: File? = null,
                                 cacheSize: Int = 0)
-  : SmartAppRatingManager(applicationId, applicationVersionName, isInDevelopmentMode, configuration, applicationContext)
+  : SmartAppRatingManager(
+    applicationId,
+    applicationVersionName,
+    isInDevelopmentMode,
+    configuration,
+    applicationContext
+)
 {
 
   private val smartAppRatingServices: SmartAppRatingServices?
@@ -51,9 +57,7 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
     }
   }
 
-
-  @AnyThread
-  override fun fetchConfigurationAndTryToDisplayPopup()
+  override fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean)
   {
     this.smartAppRatingServices?.also { services ->
       if (isInDevelopmentMode)
@@ -69,55 +73,7 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
           if (response.isSuccessful)
           {
             storeConfiguration(response.body())
-            showRatePopup()
-          }
-          else
-          {
-            if (log.isWarnEnabled)
-            {
-              log.warn("Failed to retrieve configuration file : HTTP error code = " + response.code())
-            }
-          }
-        }
-
-        override fun onFailure(call: Call<Configuration>, t: Throwable)
-        {
-          if (log.isWarnEnabled)
-          {
-            log.warn("Failed to retrieve configuration file", t)
-          }
-        }
-      })
-    } ?: run {
-      if (isInDevelopmentMode)
-      {
-        log.debug("The SmartAppManager has been created without config URL, so we won't do anything.")
-      }
-    }
-  }
-
-  /**
-   * This method allow you to fetch and display a rating popup even if conditions are not met.
-   * As a safety it cannot be used when developmentMode is not activated.
-   */
-  @AnyThread
-  override fun fetchConfigurationDisplayPopupWithoutVerification()
-  {
-    this.smartAppRatingServices?.also { services ->
-      if (isInDevelopmentMode)
-      {
-        log.debug("fetching configuration...")
-      }
-      services.getConfiguration(configurationFilePath, object : Callback<Configuration>
-      {
-
-        override fun onResponse(call: Call<Configuration>,
-                                response: Response<Configuration>)
-        {
-          if (response.isSuccessful)
-          {
-            storeConfiguration(response.body())
-            showRatePopupWithoutVerification()
+            showRatePopup(withoutVerification)
           }
           else
           {
@@ -155,8 +111,7 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
       services.getConfiguration(configurationFilePath, object : Callback<Configuration>
       {
 
-        override fun onResponse(call: Call<Configuration>,
-                                response: Response<Configuration>)
+        override fun onResponse(call: Call<Configuration>, response: Response<Configuration>)
         {
           if (response.isSuccessful)
           {
@@ -179,8 +134,6 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
           }
         }
       })
-
-
     } ?: run {
       if (isInDevelopmentMode)
       {
@@ -239,7 +192,9 @@ constructor
     val baseApiUrl = baseURL
     val configurationFilePathUrl = configurationFilePath
 
-    check((TextUtils.isEmpty(baseApiUrl) && TextUtils.isEmpty(configurationFilePathUrl)).not()) { "Unable to create the app rating manager because no base URL or path url were given" }
+    check((TextUtils.isEmpty(baseApiUrl) && TextUtils.isEmpty(configurationFilePathUrl)).not()) {
+      "Unable to create the app rating manager because no base URL or path url were given"
+    }
 
     return JsonSmartAppRatingManager(
         applicationContext = context,

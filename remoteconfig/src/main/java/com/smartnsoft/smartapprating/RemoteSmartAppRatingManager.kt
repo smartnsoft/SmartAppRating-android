@@ -11,7 +11,6 @@ import com.smartnsoft.smartapprating.bo.RemoteConfigMatchingInformation
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -27,8 +26,14 @@ class RemoteSmartAppRatingManager(
     applicationContext: Context,
     private val remoteConfigMatchingInformation: RemoteConfigMatchingInformation,
     remoteConfigCacheExpiration: Long,
-    val synchronousTimeoutInMillisecond: Long
-) : SmartAppRatingManager(applicationId, applicationVersionName, isInDevelopmentMode, configuration, applicationContext)
+    private val synchronousTimeoutInMillisecond: Long
+) : SmartAppRatingManager(
+    applicationId,
+    applicationVersionName,
+    isInDevelopmentMode,
+    configuration,
+    applicationContext
+)
 {
 
   companion object
@@ -55,7 +60,6 @@ class RemoteSmartAppRatingManager(
               remoteConfigCacheExpiration
             }
         )
-        .setDeveloperModeEnabled(isInDevelopmentMode)
         .build()
     log.logLevel = if (isInDevelopmentMode) Log.DEBUG else Log.WARN
     firebaseRemoteConfig.setConfigSettingsAsync(remoteConfigSettings).addOnCompleteListener {
@@ -66,17 +70,10 @@ class RemoteSmartAppRatingManager(
     }
   }
 
-  override fun fetchConfigurationAndTryToDisplayPopup()
+  override fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean)
   {
     fetchRemoteConfig {
-      onUpdateSuccessful(true)
-    }
-  }
-
-  override fun fetchConfigurationDisplayPopupWithoutVerification()
-  {
-    fetchRemoteConfig {
-      onUpdateSuccessful(showPopup = true, withoutVerification = true)
+      onUpdateSuccessful(showPopup = true, withoutVerification = withoutVerification)
     }
   }
 
@@ -122,14 +119,7 @@ class RemoteSmartAppRatingManager(
     {
       try
       {
-        if (withoutVerification)
-        {
-          showRatePopupWithoutVerification()
-        }
-        else
-        {
-          showRatePopup()
-        }
+        showRatePopup(withoutVerification)
       }
       catch (exception: java.lang.Exception)
       {

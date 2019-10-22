@@ -13,7 +13,7 @@ public class MainActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    SampleApplication.getRatingManager().fetchConfigurationDisplayPopupWithoutVerification();
+    SampleApplication.getRatingManager().fetchConfig(true, true);
   }
 
 }
