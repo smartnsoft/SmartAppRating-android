@@ -14,7 +14,7 @@ android {
     minSdkVersion rootProject.minSdkVersion
     targetSdkVersion rootProject.compileSdkVersion
     versionCode rootProject.versionCode
-    versionName rootProject.versionName
+    versionName rootProject.remoteConfigVersionName
     resourcePrefix rootProject.artifactId + "_"
     consumerProguardFiles 'proguard-rules.pro'
   }
@@ -57,7 +57,7 @@ dependencies {
   implementation("com.smartnsoft:logger:${logger_version}")
 
   //api project(":core")
-  api("${groupId}:${artifactId}-core:${versionName}")
+  api("${groupId}:${artifactId}-core:${coreVersionName}")
 
   // Test
   testImplementation("junit:junit:4.12")

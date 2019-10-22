@@ -15,7 +15,7 @@ android {
     minSdkVersion rootProject.minSdkVersion
     targetSdkVersion rootProject.compileSdkVersion
     versionCode rootProject.versionCode
-    versionName rootProject.versionName
+    versionName rootProject.coreVersionName
     resourcePrefix rootProject.artifactId + "_"
     consumerProguardFiles 'proguard-rules.pro'
   }

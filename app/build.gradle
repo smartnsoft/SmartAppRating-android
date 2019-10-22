@@ -37,13 +37,13 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines_version}")
 
   implementation project(":core")
-  //implementation("${groupId}:${artifactId}-core:${versionName}")
+  //implementation("${groupId}:${artifactId}-core:${coreVersionName}")
 
   implementation project(":remoteconfig")
-  //implementation("${groupId}:${artifactId}-remoteconfig:${versionName}")
+  //implementation("${groupId}:${artifactId}-remoteconfig:${remoteConfigVersionName}")
 
   implementation project(":remotejson")
-  //implementation("${groupId}:${artifactId}-remotejson:${versionName}")
+  //implementation("${groupId}:${artifactId}-remotejson:${jsonVersionName}")
 
   testImplementation("junit:junit:4.12")
   androidTestImplementation("androidx.test:runner:1.2.0")

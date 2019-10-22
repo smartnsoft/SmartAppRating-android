@@ -93,6 +93,7 @@ class RemoteSmartAppRatingManager(
     try
     {
       success = Tasks.await(firebaseRemoteConfig.fetchAndActivate(), synchronousTimeoutInMillisecond, TimeUnit.MILLISECONDS)
+      onUpdateSuccessful(showPopup = false, withoutVerification = false)
       if (isInDevelopmentMode)
       {
         log.debug("Synchronous Remote Config retrieving task took ${(System.currentTimeMillis() - startTime)}ms")

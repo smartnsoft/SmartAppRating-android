@@ -58,7 +58,9 @@ allprojects {
     "http://docs.oracle.com/javase/7/docs/api/",
     "http://d.android.com/reference/"
     ]
-    versionName = "1.3.0-SNAPSHOT"
+    coreVersionName = "1.3.0-004-SNAPSHOT"
+    jsonVersionName = "1.3.0-SNAPSHOT"
+    remoteConfigVersionName = "1.3.0-004-SNAPSHOT"
     versionCode = 5
     debugLogEnabled = true
   }

@@ -3,6 +3,7 @@ package com.smartnsoft.smartapprating
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.TextUtils
 import android.util.Log
@@ -214,6 +215,18 @@ protected constructor(
     }
 
     @JvmStatic
+    private fun getLastSessionDate(preferences: SharedPreferences): Long
+    {
+      return preferences.getLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, 0)
+    }
+
+    @JvmStatic
+    private fun setLastSessionDate(preferences: SharedPreferences, lastSessionDate: Long)
+    {
+      preferences.edit().putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, lastSessionDate).apply()
+    }
+
+    @JvmStatic
     fun getNumberOfSession(preferences: SharedPreferences): Long
     {
       return preferences.getLong(NUMBER_OF_SESSION_PREFERENCE_KEY, 0)
@@ -228,6 +241,51 @@ protected constructor(
         defaultHandler.uncaughtException(thread, throwable)
       }
     }
+
+    @JvmStatic
+    fun backupSettings(preferences: SharedPreferences): Bundle
+    {
+      return Bundle().apply {
+        putLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, getRateLaterTimestamp(preferences))
+        putBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY, hasRatingAlreadyBeenGiven(preferences))
+        putLong(NUMBER_OF_SESSION_PREFERENCE_KEY, getNumberOfSession(preferences))
+        putLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, getNumberOfTimeLaterWasClicked(preferences))
+        putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, getLastSessionDate(preferences))
+        putLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, getLastCrashTimestamp(preferences))
+      }
+    }
+
+    @JvmStatic
+    fun restoreSettings(preferences: SharedPreferences, bundle: Bundle?)
+    {
+      bundle?.also { backup ->
+        val editor = preferences.edit()
+
+        editor.putLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY,
+            backup.getLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, getRateLaterTimestamp(preferences)))
+
+        editor.putBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY,
+            backup.getBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY, hasRatingAlreadyBeenGiven(preferences)))
+
+        editor.putLong(NUMBER_OF_SESSION_PREFERENCE_KEY,
+            backup.getLong(NUMBER_OF_SESSION_PREFERENCE_KEY, getNumberOfSession(preferences)))
+
+        editor.putLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY,
+            backup.getLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, getNumberOfTimeLaterWasClicked(preferences))
+        )
+
+        editor.putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY,
+            backup.getLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, getLastSessionDate(preferences))
+        )
+
+        editor.putLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY,
+            backup.getLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, getLastCrashTimestamp(preferences))
+        )
+
+        editor.apply()
+      }
+    }
+
   }
 
   @JvmField
@@ -253,7 +311,7 @@ protected constructor(
 
   fun increaseSessionNumberIfConditionsAreMet(sharedPreferences: SharedPreferences)
   {
-    val lastSessionDateInMilliseconds = sharedPreferences.getLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, 0)
+    val lastSessionDateInMilliseconds = getLastSessionDate(sharedPreferences)
     val currentTimeMillis = System.currentTimeMillis()
     val lastSessionDate = Date(lastSessionDateInMilliseconds)
 
@@ -265,7 +323,7 @@ protected constructor(
     {
       increaseNumberOfSession(sharedPreferences)
     }
-    sharedPreferences.edit().putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, currentTimeMillis).apply()
+    setLastSessionDate(sharedPreferences, currentTimeMillis)
   }
 
   /**
