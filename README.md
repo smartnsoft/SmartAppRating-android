@@ -102,11 +102,11 @@ SmartAppRatingManager.resetRating(sharedPreferences);
 
 If you want to use a custom layout or override specific parts of the popup activity :
 
-* Extends from class SmartAppRatingActivity
+* Extends from class AbstractSmartAppRatingActivity
 
 ```java
 public final class MyCustomAppRatingActivity
-    extends SmartAppRatingActivity
+    extends AbstractSmartAppRatingActivity
 {
 
   @Override
@@ -126,6 +126,19 @@ final SmartAppRatingManager smartAppRatingManager = new Builder(this)
         ...
         .build();
 ```
+
+* Analytics
+
+A lot of analytics events can be sent from the popup. If you need them, you will need to send events to your analytics platform via the method `sendAnalyticsEvent`
+
+Events currently implemented in the library :
+- Main screen is displayed
+- User selects a rating
+- User clicks on later button on the main screen
+- User clicks on the action button on the positive or negative feedback button
+- User clicks on the later button on the positive or negative feedback button
+
+To override default event names or extras, just override the correct method from _RatingScreenAnalyticsInterface_ interface implemented by _AbstractSmartAppRatingActivity_
 
 ## Releases
 
