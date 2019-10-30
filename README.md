@@ -9,13 +9,19 @@ Small library which can be used to display a rating popup. Different information
 **Gradle :**
 
 ```groovy
-implementation 'com.smartnsoft:smartapprating:2.0.0'
+// Local config
+implementation 'com.smartnsoft:smartapprating-core:2.0.0'
+
+// Firebase Remote Config
+implementation 'com.smartnsoft:smartapprating-remoteconfig:2.0.0'
+
+// Remote JSON config
+implementation 'com.smartnsoft:smartapprating-json:2.0.0'
 ```
 
 ### Configuration providers
 
 There are multiple ways to configure the popup: A local configuration, a remote json or Firebase RemoteConfig.
-
 
 For the local configuration, you just have to create a `Configuration` object with the required values and then give it to the builder via the `setFallbackConfiguration` method.
 
@@ -49,6 +55,15 @@ The parameters to declare in RemoteConfig with their respective default key are 
 | rating_config                	| Single field containing the json configuration                          	|
 
 If you want to change the keys in Firebase, you must override them by giving a `RemoteConfigMatchingInformation` object to the factory.
+
+---
+
+If not provided, some parameters have default values:
+
+- No popup can be displayed if a crash has occured in the last **15 days**
+- No popup can be displayed if the last popup was diplayed in the last **3 days**
+- Time between user sessions cannot exceed **3 days**
+- **3** reminders maximum
 
 ### Application configuration
 
