@@ -56,8 +56,8 @@ dependencies {
 
   implementation("com.smartnsoft:logger:${logger_version}")
 
-  //api project(":core")
-  api("${groupId}:${artifactId}-core:${coreVersionName}")
+  api project(":core")
+//  api("${groupId}:${artifactId}-core:${coreVersionName}")
 
   // Test
   testImplementation("junit:junit:4.12")

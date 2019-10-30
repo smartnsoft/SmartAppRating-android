@@ -39,25 +39,7 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
 )
 {
 
-  private val smartAppRatingServices: SmartAppRatingServices?
-
-  private var configurationFilePath: String? = null
-
-  init
-  {
-    if (TextUtils.isEmpty(baseURL).not())
-    {
-      this.configurationFilePath = configurationFilePath
-      this.smartAppRatingServices = SmartAppRatingServices.get(baseURL, cacheDirectory, cacheSize)
-    }
-    else
-    {
-      this.configurationFilePath = null
-      this.smartAppRatingServices = null
-    }
-  }
-
-  override fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean)
+  override fun fetchConfiguration(tryToDisplayPopup: Boolean, withoutVerification: Boolean)
   {
     this.smartAppRatingServices?.also { services ->
       if (isInDevelopmentMode)
@@ -73,7 +55,10 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
           if (response.isSuccessful)
           {
             storeConfiguration(response.body())
-            showRatePopup(withoutVerification)
+            if (tryToDisplayPopup)
+            {
+              showRatePopup(withoutVerification)
+            }
           }
           else
           {
@@ -100,45 +85,21 @@ class JsonSmartAppRatingManager(@NotNull applicationContext: Context,
     }
   }
 
-  @AnyThread
-  override fun fetchConfiguration()
+  private val smartAppRatingServices: SmartAppRatingServices?
+
+  private var configurationFilePath: String? = null
+
+  init
   {
-    this.smartAppRatingServices?.also { services ->
-      if (isInDevelopmentMode)
-      {
-        log.debug("fetching configuration...")
-      }
-      services.getConfiguration(configurationFilePath, object : Callback<Configuration>
-      {
-
-        override fun onResponse(call: Call<Configuration>, response: Response<Configuration>)
-        {
-          if (response.isSuccessful)
-          {
-            storeConfiguration(response.body())
-          }
-          else
-          {
-            if (log.isWarnEnabled)
-            {
-              log.warn("Failed to retrieve configuration file : HTTP error code = " + response.code())
-            }
-          }
-        }
-
-        override fun onFailure(call: Call<Configuration>, t: Throwable)
-        {
-          if (log.isWarnEnabled)
-          {
-            log.warn("Failed to retrieve configuration file", t)
-          }
-        }
-      })
-    } ?: run {
-      if (isInDevelopmentMode)
-      {
-        log.debug("The SmartAppManager has been created without config URL, so we won't do anything.")
-      }
+    if (TextUtils.isEmpty(baseURL).not())
+    {
+      this.configurationFilePath = configurationFilePath
+      this.smartAppRatingServices = SmartAppRatingServices.get(baseURL, cacheDirectory, cacheSize)
+    }
+    else
+    {
+      this.configurationFilePath = null
+      this.smartAppRatingServices = null
     }
   }
 

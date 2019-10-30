@@ -259,30 +259,29 @@ protected constructor(
     fun restoreSettings(preferences: SharedPreferences, bundle: Bundle?)
     {
       bundle?.also { backup ->
-        val editor = preferences.edit()
+        preferences.edit().apply {
+          putLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY,
+              backup.getLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, getRateLaterTimestamp(preferences)))
 
-        editor.putLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY,
-            backup.getLong(LAST_RATE_POPUP_CLICK_ON_LATER_TIMESTAMP_PREFERENCE_KEY, getRateLaterTimestamp(preferences)))
+          putBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY,
+              backup.getBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY, hasRatingAlreadyBeenGiven(preferences)))
 
-        editor.putBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY,
-            backup.getBoolean(RATING_HAS_BEEN_GIVEN_PREFERENCE_KEY, hasRatingAlreadyBeenGiven(preferences)))
+          putLong(NUMBER_OF_SESSION_PREFERENCE_KEY,
+              backup.getLong(NUMBER_OF_SESSION_PREFERENCE_KEY, getNumberOfSession(preferences)))
 
-        editor.putLong(NUMBER_OF_SESSION_PREFERENCE_KEY,
-            backup.getLong(NUMBER_OF_SESSION_PREFERENCE_KEY, getNumberOfSession(preferences)))
+          putLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY,
+              backup.getLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, getNumberOfTimeLaterWasClicked(preferences))
+          )
 
-        editor.putLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY,
-            backup.getLong(NUMBER_OF_TIME_LATER_WAS_CLICKED_PREFERENCE_KEY, getNumberOfTimeLaterWasClicked(preferences))
-        )
+          putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY,
+              backup.getLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, getLastSessionDate(preferences))
+          )
 
-        editor.putLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY,
-            backup.getLong(LAST_SESSION_DATE_FOR_APP_RATING_PREFERENCE_KEY, getLastSessionDate(preferences))
-        )
-
-        editor.putLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY,
-            backup.getLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, getLastCrashTimestamp(preferences))
-        )
-
-        editor.apply()
+          putLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY,
+              backup.getLong(LAST_CRASH_TIMESTAMP_PREFERENCE_KEY, getLastCrashTimestamp(preferences))
+          )
+          apply()
+        }
       }
     }
 
@@ -336,33 +335,32 @@ protected constructor(
   {
     if (withoutVerification)
     {
-      if (isInDevelopmentMode)
-      {
-        if (configuration != null)
-        {
-          return createRatePopupIntent()
-        }
-      }
-      return null
+      return configuration
+          ?.takeIf { isInDevelopmentMode }
+          ?.let {
+            createRatePopupIntent()
+          }
     }
-
-    val sharedPreferences = getPreferences()
-    configuration?.let { conf ->
-      if (conf.isRateAppDisabled.not()
-          && hasRatingAlreadyBeenGiven(sharedPreferences).not()
-          && conf.minimumTimeGapAfterACrashInDays > 0 && getLastCrashTimestamp(sharedPreferences) + conf.minimumTimeGapAfterACrashInDays * DAY_IN_MILLISECONDS < System.currentTimeMillis()
-          && conf.minimumTimeGapBeforeAskingAgainInDays > 0 && getRateLaterTimestamp(sharedPreferences) + conf.minimumTimeGapBeforeAskingAgainInDays * DAY_IN_MILLISECONDS < System.currentTimeMillis()
-          && conf.numberOfSessionBeforeAskingToRate > 0 && conf.numberOfSessionBeforeAskingToRate <= getNumberOfSession(sharedPreferences)
-          && conf.maxNumberOfReminder > 0 && conf.maxNumberOfReminder > getNumberOfTimeLaterWasClicked(sharedPreferences))
-      {
-        if (log.isDebugEnabled)
-        {
-          log.debug("Try to display the rating popup")
-        }
-        return createRatePopupIntent()
-      }
+    else
+    {
+      val sharedPreferences = getPreferences()
+      return configuration
+          ?.takeIf { conf ->
+            conf.isRateAppDisabled.not()
+                && hasRatingAlreadyBeenGiven(sharedPreferences).not()
+                && conf.minimumTimeGapAfterACrashInDays > 0 && getLastCrashTimestamp(sharedPreferences) + conf.minimumTimeGapAfterACrashInDays * DAY_IN_MILLISECONDS < System.currentTimeMillis()
+                && conf.minimumTimeGapBeforeAskingAgainInDays > 0 && getRateLaterTimestamp(sharedPreferences) + conf.minimumTimeGapBeforeAskingAgainInDays * DAY_IN_MILLISECONDS < System.currentTimeMillis()
+                && conf.numberOfSessionBeforeAskingToRate > 0 && conf.numberOfSessionBeforeAskingToRate <= getNumberOfSession(sharedPreferences)
+                && conf.maxNumberOfReminder > 0 && conf.maxNumberOfReminder > getNumberOfTimeLaterWasClicked(sharedPreferences)
+          }
+          ?.let { _ ->
+            if (log.isDebugEnabled)
+            {
+              log.debug("Try to display the rating popup")
+            }
+            createRatePopupIntent()
+          }
     }
-    return null
   }
 
   /**
@@ -374,14 +372,7 @@ protected constructor(
   @JvmOverloads
   fun fetchConfig(tryToDisplayPopup: Boolean = false, withoutVerification: Boolean = false)
   {
-    if (tryToDisplayPopup)
-    {
-      fetchConfigurationAndTryToDisplayPopup(withoutVerification)
-    }
-    else
-    {
-      fetchConfiguration()
-    }
+    fetchConfiguration(tryToDisplayPopup, withoutVerification)
   }
 
   /**
@@ -399,10 +390,7 @@ protected constructor(
   }
 
   @AnyThread
-  protected abstract fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean = false)
-
-  @AnyThread
-  protected abstract fun fetchConfiguration()
+  protected abstract fun fetchConfiguration(tryToDisplayPopup: Boolean = false, withoutVerification: Boolean = false)
 
   protected fun storeConfiguration(configuration: Configuration?)
   {

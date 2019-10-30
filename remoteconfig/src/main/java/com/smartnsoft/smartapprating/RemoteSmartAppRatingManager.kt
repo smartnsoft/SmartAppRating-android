@@ -70,17 +70,10 @@ class RemoteSmartAppRatingManager(
     }
   }
 
-  override fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean)
+  override fun fetchConfiguration(tryToDisplayPopup: Boolean, withoutVerification: Boolean)
   {
     fetchRemoteConfig {
-      onUpdateSuccessful(showPopup = true, withoutVerification = withoutVerification)
-    }
-  }
-
-  override fun fetchConfiguration()
-  {
-    fetchRemoteConfig {
-      onUpdateSuccessful(false)
+      onUpdateSuccessful(showPopup = tryToDisplayPopup, withoutVerification = withoutVerification)
     }
   }
 

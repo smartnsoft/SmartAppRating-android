@@ -33,7 +33,7 @@ public final class SampleApplication
 
     ratingManager = new Builder(this)
         .setIsInDevelopmentMode(BuildConfig.DEBUG)
-        .setApplicationId(BuildConfig.DEBUG ? "com.smartnsoft.metro" : BuildConfig.APPLICATION_ID)
+        .setApplicationId(BuildConfig.APPLICATION_ID)
         .setRatePopupActivity(AnimatedSmartAppRatingActivity.class)
         .setApplicationVersionName(BuildConfig.VERSION_NAME)
         .setFallbackConfiguration(new Configuration())

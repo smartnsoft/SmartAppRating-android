@@ -24,13 +24,9 @@ class LocalSmartAppRatingManager(
 )
 {
 
-  override fun fetchConfigurationAndTryToDisplayPopup(withoutVerification: Boolean)
+  override fun fetchConfiguration(tryToDisplayPopup: Boolean, withoutVerification: Boolean)
   {
 
-  }
-
-  override fun fetchConfiguration()
-  {
   }
 
   @WorkerThread
