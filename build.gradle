@@ -56,7 +56,7 @@ allprojects {
 
     coreArtifactDescription = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
     jsonArtifactDescription = "SmartAppRating-json is a module of SmartAppRating which adds configuration via a remote json"
-    remoteConfigArtifactDescription = "SmartAppRating-remoteconfig is a module of SmartAppRating which adds configuration via a remote json"
+    remoteConfigArtifactDescription = "SmartAppRating-remoteconfig is a module of SmartAppRating which adds configuration via Firebase RemoteConfig"
 
     documentationReference = [
     "http://docs.oracle.com/javase/7/docs/api/",
