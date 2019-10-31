@@ -6,7 +6,9 @@ apply plugin: "com.jfrog.bintray"
 apply plugin: "maven"
 apply plugin: "maven-publish"
 
-def moduleArtifactId = project.artifactId + "-core"
+def moduleSuffix = "-core"
+def moduleArtifactId = project.artifactId + moduleSuffix
+def moduleLibraryName = project.libraryName + moduleSuffix
 
 android {
   compileSdkVersion rootProject.compileSdkVersion
@@ -120,7 +122,7 @@ publishing
       {
         def root = asNode()
         root.appendNode("description", project.coreArtifactDescription)
-        root.appendNode("name", project.libraryName)
+        root.appendNode("name", moduleLibraryName)
         root.appendNode("url", "https://github.com/smartnsoft/" + project.repositoryName)
         root.children().last() + pomConfig
       }
@@ -152,7 +154,7 @@ bintray
   pkg
   {
     repo = "maven"
-    name = project.libraryName
+    name = moduleLibraryName
     userOrg = "smartnsoft"
     licenses = ["MIT"]
     vcsUrl = "https://github.com/smartnsoft/" + project.repositoryName + ".git"
@@ -173,7 +175,7 @@ uploadArchives
   {
     mavenDeployer
     {
-      repository(url: "https://api.bintray.com/maven/smartnsoft/maven/" + project.libraryName + "/;publish=1")
+      repository(url: "https://api.bintray.com/maven/smartnsoft/maven/" + moduleLibraryName + "/;publish=1")
       {
         authentication(userName: findProperty("bintrayUsername") ?: "", password: findProperty("bintrayKey") ?: "")
       }
@@ -185,7 +187,7 @@ uploadArchives
 
       pom.project
       {
-        name rootProject.libraryName
+        name moduleLibraryName
         groupId rootProject.groupId
         artifactId moduleArtifactId
         version android.defaultConfig.versionName

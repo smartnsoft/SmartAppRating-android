@@ -57,7 +57,7 @@ allprojects {
     libraryName = "SmartAppRating"
     repositoryName = "SmartAppRating-android"
 
-    coreArtifactDescription = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
+    coreArtifactDescription = "SmartAppRating is a simple library to ask user to rate your app if some conditions are met"
     jsonArtifactDescription = "SmartAppRating-json is a module of SmartAppRating which adds configuration via a remote json"
     remoteConfigArtifactDescription = "SmartAppRating-remoteconfig is a module of SmartAppRating which adds configuration via Firebase RemoteConfig"
 
