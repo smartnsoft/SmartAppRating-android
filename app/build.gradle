@@ -43,7 +43,7 @@ dependencies {
   //implementation("${groupId}:${artifactId}-remoteconfig:${remoteConfigVersionName}")
 
   implementation project(":remotejson")
-  //implementation("${groupId}:${artifactId}-remotejson:${jsonVersionName}")
+  //implementation("${groupId}:${artifactId}-json:${jsonVersionName}")
 
   testImplementation("junit:junit:4.12")
   androidTestImplementation("androidx.test:runner:1.2.0")

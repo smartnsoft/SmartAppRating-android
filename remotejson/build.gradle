@@ -5,7 +5,9 @@ apply plugin: "com.jfrog.bintray"
 apply plugin: "maven"
 apply plugin: "maven-publish"
 
-def moduleArtifactId = project.artifactId + "-remotejson"
+def moduleSuffix = "-json"
+def moduleArtifactId = project.artifactId + moduleSuffix
+def moduleLibraryName = project.libraryName + moduleSuffix
 
 android {
   compileSdkVersion rootProject.compileSdkVersion
@@ -52,21 +54,14 @@ dependencies {
 
   implementation("com.smartnsoft:logger:${logger_version}")
 
-  api project(":core")
-//  api("${groupId}:${artifactId}-core:${coreVersionName}")
+//  api project(":core")
+  api("${groupId}:${artifactId}-core:${coreVersionName}")
 
   // Test
   testImplementation("junit:junit:4.12")
   androidTestImplementation("androidx.test:runner:1.2.0")
   androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
 }
-
-
-version = android.defaultConfig.versionName
-def artifactGroup = "com.smartnsoft"
-group = artifactGroup
-def artifactName = "smartapprating"
-description = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
 
 task sourcesJar(type: Jar) {
   archiveClassifier.set("sources")
@@ -77,8 +72,8 @@ task javadoc(type: Javadoc) {
   // For now, we'll disable Javadoc because of Kotlin files not being supported
   enabled = false
 
-  title = project.libraryName + " API"
-  description "Javadoc for the " + project.libraryName
+  title = moduleLibraryName + " API"
+  description "Javadoc for the " + moduleLibraryName
   source = android.sourceSets.main.java.srcDirs
 
   options.charSet = "UTF-8"
@@ -128,8 +123,8 @@ publishing
       pom.withXml
       {
         def root = asNode()
-        root.appendNode("description", project.artifactDescription)
-        root.appendNode("name", project.libraryName)
+        root.appendNode("description", project.jsonArtifactDescription)
+        root.appendNode("name", moduleLibraryName)
         root.appendNode("url", "https://github.com/smartnsoft/" + project.repositoryName)
         root.children().last() + pomConfig
       }
@@ -161,7 +156,7 @@ bintray
   pkg
   {
     repo = "maven"
-    name = project.libraryName
+    name = moduleLibraryName
     userOrg = "smartnsoft"
     licenses = ["MIT"]
     vcsUrl = "https://github.com/smartnsoft/" + project.repositoryName + ".git"
@@ -170,7 +165,7 @@ bintray
     version
     {
       name = android.defaultConfig.versionName
-      desc = project.artifactDescription
+      desc = project.jsonArtifactDescription
       vcsTag = "v" + android.defaultConfig.versionName
     }
   }
@@ -182,7 +177,7 @@ uploadArchives
   {
     mavenDeployer
     {
-      repository(url: "https://api.bintray.com/maven/smartnsoft/maven/" + project.libraryName + "/;publish=1")
+      repository(url: "https://api.bintray.com/maven/smartnsoft/maven/" + moduleLibraryName + "/;publish=1")
       {
         authentication(userName: findProperty("bintrayUsername") ?: "", password: findProperty("bintrayKey") ?: "")
       }
@@ -194,8 +189,8 @@ uploadArchives
 
       pom.project
       {
-        name artifactName
-        groupId artifactGroup
+        name moduleLibraryName
+        groupId rootProject.groupId
         artifactId moduleArtifactId
         version android.defaultConfig.versionName
         packaging "aar"

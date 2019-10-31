@@ -53,7 +53,11 @@ allprojects {
     artifactId = 'smartapprating'
     libraryName = "SmartAppRating"
     repositoryName = "SmartAppRating-android"
-    artifactDescription = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
+
+    coreArtifactDescription = "SmartAppRating is a simple library to ask user to rate your app if some condition are met"
+    jsonArtifactDescription = "SmartAppRating-json is a module of SmartAppRating which adds configuration via a remote json"
+    remoteConfigArtifactDescription = "SmartAppRating-remoteconfig is a module of SmartAppRating which adds configuration via a remote json"
+
     documentationReference = [
     "http://docs.oracle.com/javase/7/docs/api/",
     "http://d.android.com/reference/"
@@ -62,7 +66,6 @@ allprojects {
     jsonVersionName = "1.3.0-SNAPSHOT"
     remoteConfigVersionName = "1.3.0-004-SNAPSHOT"
     versionCode = 5
-    debugLogEnabled = true
   }
 }
 
@@ -76,12 +79,12 @@ task releaseCore(dependsOn: [':core:uploadArchives']) {
 task releaseRemoteConfig(dependsOn: [':remoteconfig:uploadArchives']) {
 }
 
-task releaseRemoteJson(dependsOn: [':remotejson:uploadArchives']) {
+task releaseJson(dependsOn: [':remotejson:uploadArchives']) {
 }
 
 task releaseAll(dependsOn:
 ['releaseCore',
  'releaseRemoteConfig',
- 'releaseRemoteJson',
+ 'releaseJson',
 ]) {
 }
