@@ -6,7 +6,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 /**
- * The class description here.
  *
  * @author Adrien Vitti
  * @since 2018.01.29

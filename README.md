@@ -6,8 +6,6 @@ Small library which can be used to display a rating popup. Different information
 
 ### Gradle
 
-**Gradle :**
-
 ```groovy
 // Local config
 implementation 'com.smartnsoft:smartapprating-core:2.0.0'

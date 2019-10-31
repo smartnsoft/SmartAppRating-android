@@ -70,7 +70,7 @@ public abstract class AbstractSmartAppRatingActivity
 
   protected boolean isInDevelopmentMode;
 
-  private final Logger log = LoggerFactory.getInstance(this.getClass().getSimpleName());
+  private final Logger log = LoggerFactory.getInstance(this.getClass());
 
   @Override
   protected final void onCreate(Bundle savedInstanceState)

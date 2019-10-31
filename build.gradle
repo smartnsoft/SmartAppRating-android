@@ -39,7 +39,7 @@ allprojects {
     compileSdkVersion = 28
     minSdkVersion = 16
 
-    logger_version = "1.0.0-008-SNAPSHOT"
+    logger_version = "1.0.0"
 
     // JSON
     retrofit_library_version = '2.6.2'
