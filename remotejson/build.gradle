@@ -140,7 +140,7 @@ publishing.publications.all
     asNode().dependencies."*".findAll()
     {
       it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
-        dep.name == it.moduleArtifactId.text()
+        dep.name == it.artifactId.text()
       }
     }.each
     {
