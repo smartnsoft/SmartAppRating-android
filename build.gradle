@@ -1,17 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  ext.kotlin_version = '1.3.50'
+  ext.kotlin_version = '1.3.61'
 
   repositories {
     google()
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
+    classpath 'com.android.tools.build:gradle:3.5.3'
     classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath 'com.google.gms:google-services:4.3.2'
+    classpath 'com.google.gms:google-services:4.3.3'
   }
 
 }
@@ -44,13 +44,22 @@ allprojects {
 
     logger_version = "1.0.0"
 
+    core_ktx_version = '1.1.0'
+    // Needed to fix a crash with Webviews on Android 5.0
+    // It should be fixed with 1.2.0-alpha02
+    // cf. https://issuetracker.google.com/issues/141132133
+    // &&  https://issuetracker.google.com/issues/141351441
+    appcompat_version = '1.1.0-rc01'
+    constraint_version = '1.1.3'
+    annotation_version = '1.1.0'
+
     // JSON
-    retrofit_library_version = '2.6.2'
-    moshi_version = "1.8.0"
+    retrofit_library_version = '2.7.1'
+    moshi_version = '1.9.2'
 
     // Remote Config
     coroutines_version = "1.1.1"
-    firebase_config_version = '19.0.2'
+    firebase_config_version = '19.1.0'
 
     groupId = 'com.smartnsoft'
     artifactId = 'smartapprating'
