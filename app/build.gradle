@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
   compileSdkVersion project.compileSdkVersion
   defaultConfig {
-    applicationId "fr.epresse.android.preprod"
+    applicationId "com.smartnsoft.smartappratingsample"
     minSdkVersion project.minSdkVersion
     targetSdkVersion project.compileSdkVersion
     versionCode 1
