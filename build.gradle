@@ -76,7 +76,7 @@ allprojects {
     ]
     coreVersionName = "2.0.0"
     jsonVersionName = "2.0.0"
-    remoteConfigVersionName = "2.0.0"
+    remoteConfigVersionName = "2.0.1"
     versionCode = 6
   }
 }
