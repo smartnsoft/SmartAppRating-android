@@ -40,13 +40,13 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${coroutines_version}")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines_version}")
 
-  implementation project(":core")
+  // implementation project(":core")
   //implementation("${groupId}:${artifactId}-core:${coreVersionName}")
 
   implementation project(":remoteconfig")
   //implementation("${groupId}:${artifactId}-remoteconfig:${remoteConfigVersionName}")
 
-  implementation project(":remotejson")
+  // implementation project(":remotejson")
   //implementation("${groupId}:${artifactId}-json:${jsonVersionName}")
 
   testImplementation('junit:junit:4.13')
