@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.smartnsoft.smartapprating.bo.Configuration
@@ -44,10 +45,15 @@ class RemoteSmartAppRatingManager(
 
   }
 
-  private val firebaseRemoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+  private val firebaseRemoteConfig: FirebaseRemoteConfig
 
   init
   {
+    val firebaseApp = FirebaseApp.initializeApp(applicationContext)
+        ?: throw IllegalStateException("Firebase was not properly initialized !")
+
+    firebaseRemoteConfig = FirebaseRemoteConfig.getInstance(firebaseApp)
+
     val remoteConfigSettings = FirebaseRemoteConfigSettings.Builder()
         .setFetchTimeoutInSeconds(synchronousTimeoutInMillisecond)
         .setMinimumFetchIntervalInSeconds(
